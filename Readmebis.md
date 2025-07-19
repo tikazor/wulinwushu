@@ -138,3 +138,6 @@ Priorité à la stabilité, test intensif des formulaires et de la navigation
 Déploiement NAS → à enclencher dès que Docker local OK
 
 Documentation à enrichir après premier run Docker
+
+.\env\Scripts\activate
+deactivate
