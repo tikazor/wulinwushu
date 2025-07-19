@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}template-homepage{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/welcome_page.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+
+  <section style="padding: 2em;">
+    <h1>🎓 Bienvenue sur la plateforme de formation <strong>Wushu</strong></h1>
+    <p>Explorez les modules, validez vos fiches, suivez votre progression à votre rythme.</p>
+
+    {% if user.is_authenticated %}
+      <p>
+        👉 <a href="/espace/">Accéder à mon espace personnel</a>
+      </p>
+      {% if user.role == "animateur" %}
+        <p>
+          📊 <a href="/suivi/">Voir le suivi des pratiquants</a>
+        </p>
+      {% endif %}
+    {% else %}
+      <p>
+        🔐 <a href="/login/">Connectez-vous pour commencer</a>
+      </p>
+    {% endif %}
+  </section>
+
+{% endblock content %}

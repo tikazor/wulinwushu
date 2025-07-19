@@ -1,0 +1,23 @@
+{% load dict_utils %}
+
+<h1>Suivi global des fiches validées</h1>
+<table border="1">
+  <thead>
+    <tr>
+      <th>Utilisateur</th>
+      {% for fiche in fiches %}
+        <th>{{ fiche.title }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for utilisateur, validations in data.items %}
+    <tr>
+      <td>{{ utilisateur.username }}</td>
+      {% for fiche in fiches %}
+        <td>{% if validations|get_item:fiche %}✔{% else %}✘{% endif %}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

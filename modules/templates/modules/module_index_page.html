@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+  <h1>{{ page.title }}</h1>
+
+  <section>
+    <h2>🔖 Séances (Fiches pédagogiques)</h2>
+    <ul>
+      {% for fiche in fiches %}
+        <li><a href="{{ fiche.url }}">{{ fiche.title }} — {{ fiche.date }}</a></li>
+      {% empty %}
+        <li>Aucune fiche disponible.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>🗂️ Séquences</h2>
+    <ul>
+      {% for seq in sequences %}
+        <li>{{ seq.titre }} ({{ seq.type_sequence }}) — {{ seq.somme_duree }} min</li>
+      {% empty %}
+        <li>Aucune séquence définie.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>🔧 Ateliers</h2>
+    <ul>
+      {% for at in ateliers %}
+        <li>{{ at.technique }} – {{ at.duree }} min</li>
+      {% empty %}
+        <li>Aucun atelier.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>🥋 Techniques</h2>
+    <ul>
+      {% for tech in techniques %}
+        <li>{{ tech.get_nom_pinyin_display }} ({{ tech.description }})</li>
+      {% empty %}
+        <li>Aucune technique référencée.</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endblock %}

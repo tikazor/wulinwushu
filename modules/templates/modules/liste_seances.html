@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto py-8">
+  <h1 class="text-3xl font-bold mb-6 text-center">Séances</h1>
+  <form method="get" class="mb-6 flex gap-2 justify-center">
+    <input type="text" name="q" placeholder="Recherche (titre, participants, animateur...)" value="{{ q }}" class="input input-bordered w-full max-w-xs rounded-lg px-4 py-2 border border-gray-300">
+    <button type="submit" class="btn bg-blue-600 text-white rounded-lg px-4 py-2">🔍</button>
+    {% if q %}<a href="{% url 'liste_seances' %}" class="text-red-500 ml-2">✖ Effacer</a>{% endif %}
+  </form>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for fiche in fiches %}
+      <a href="{% url 'detail_seance' fiche.pk %}"  class="rounded-2xl shadow-lg p-6 bg-white hover:scale-105 transition flex flex-col gap-2 group">
+        <div class="flex flex-col gap-1 mb-2">
+          <h2 class="font-semibold text-lg group-hover:text-blue-700 mb-1">{{ fiche.title }}</h2>
+          {% if fiche.date %}<div class="text-xs text-gray-500">{{ fiche.date|date:"d/m/Y" }}</div>{% endif %}
+          <div class="text-xs text-indigo-800 bg-indigo-100 rounded px-2 py-1 w-max">
+            {{ fiche.get_niveau_display }}
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-600">
+          Animateurs : {{ fiche.animateurs.all|join:", " }}
+        </div>
+        <div class="text-xs text-gray-400">Participants : {{ fiche.participants|default:"—" }}</div>
+      </a>
+    {% empty %}
+      <div class="col-span-full text-center text-gray-500">Aucune séance trouvée.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

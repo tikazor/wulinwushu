@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto py-8">
+  <h1 class="text-3xl font-bold mb-6 text-center">Séquences</h1>
+  <form method="get" class="mb-6 flex gap-2 justify-center">
+    <input type="text" name="q" placeholder="Recherche (titre, type, atelier...)" value="{{ q }}" class="input input-bordered w-full max-w-xs rounded-lg px-4 py-2 border border-gray-300">
+    <button type="submit" class="btn bg-blue-600 text-white rounded-lg px-4 py-2">🔍</button>
+    {% if q %}<a href="{% url 'liste_sequences' %}" class="text-red-500 ml-2">✖ Effacer</a>{% endif %}
+  </form>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for seq in sequences %}
+    <a href="{% url 'detail_sequence' seq.pk %}"> 
+      <div class="bg-white rounded-2xl shadow-lg p-6 hover:scale-105 transition-all duration-300 flex flex-col justify-between h-full">
+        <div>
+          <h2 class="font-semibold text-lg mb-2">{{ seq.titre }}</h2>
+          <div class="text-xs text-indigo-800 bg-indigo-100 rounded px-2 py-1 inline-block mb-2">
+            {{ seq.get_type_sequence_display }}
+          </div>
+          <div class="text-xs text-green-700 bg-green-50 rounded px-2 py-1 mb-1 w-max">
+            {{ seq.ateliers.count }} atelier{% if seq.ateliers.count > 1 %}s{% endif %}
+          </div>
+          {% if seq.ateliers.all %}
+          <ul class="text-xs text-gray-500 mt-2 mb-2 list-disc ml-5">
+            {% for at in seq.ateliers.all|slice:":3" %}
+              <li>{{ at }}</li>
+            {% endfor %}
+            {% if seq.ateliers.count > 3 %}<li>…</li>{% endif %}
+          </ul>
+          {% endif %}
+        </div>
+        {# Si tu veux un bouton de détail par séquence (active-le si une vue de détail existe) #}
+        {# <a href="{% url 'sequence_detail' seq.pk %}" class="mt-4 btn bg-blue-600 text-white rounded-lg px-4 py-2 self-end">Détail</a> #}
+      </div>
+      </a>
+    {% empty %}
+      <div class="col-span-full text-center text-gray-500">Aucune séquence trouvée.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% load wagtailimages_tags %}
+
+<div class="technique-card border rounded p-4 mb-4">
+  <!-- Titre de la technique -->
+  <h5 class="text-xl font-semibold mb-1">
+    {{ technique.nom }}
+    {% if technique.nom_pinyin %}<span class="text-sm italic">({{ technique.nom_pinyin }})</span>{% endif %}
+  </h5>
+  {% if technique.traduction %}
+    <p class="text-sm text-gray-600 mb-2">« {{ technique.traduction }} »</p>
+  {% endif %}
+
+  <!-- Description libre -->
+  {% if technique.description %}
+    <div class="mb-3">
+      {{ technique.description|linebreaks }}
+    </div>
+  {% endif %}
+
+  <!-- Image de la technique -->
+  {% if technique.image %}
+    <div class="mb-3">
+      {% image technique.image fill-600x400 class="rounded shadow" %}
+    </div>
+  {% endif %}
+
+  <!-- Fichier vidéo à télécharger -->
+  {% if technique.video %}
+    <p class="mb-2">
+      <a href="{{ technique.video.url }}" target="_blank"
+         class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded">
+        Télécharger la vidéo
+      </a>
+    </p>
+  {% endif %}
+
+  <!-- Vidéo embarquée (YouTube / Vimeo) -->
+  {% if technique.video_embed %}
+    <div class="mb-3">
+      <iframe
+        src="{{ technique.video_embed }}"
+        width="100%" height="315"
+        frameborder="0" allowfullscreen>
+      </iframe>
+    </div>
+  {% endif %}
+
+  <!-- Lien externe -->
+  {% if technique.lien %}
+    <p>
+      <a href="{{ technique.lien }}" target="_blank"
+         class="text-blue-600 underline">
+        Plus d’infos
+      </a>
+    </p>
+  {% endif %}
+</div>

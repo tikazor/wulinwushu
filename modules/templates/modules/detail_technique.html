@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[70vh] bg-gray-50 py-8">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
+    {% if objet.image %}
+      <img src="{{ objet.image.url }}" alt="{{ objet }}" class="rounded-xl w-full h-48 object-cover mb-4 shadow" />
+    {% endif %}
+    <h1 class="text-3xl font-bold mb-2">{{ objet.nom_pinyin }}</h1>
+    {% if objet.nom %}
+      <h2 class="text-lg text-gray-500 italic mb-1">{{ objet.nom }}</h2>
+    {% endif %}
+    {% if objet.traduction %}
+      <h3 class="text-md text-gray-400 mb-1">({{ objet.traduction }})</h3>
+    {% endif %}
+    <div class="text-gray-700 mb-4">{{ objet.description|linebreaksbr }}</div>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <span class="px-2 py-1 rounded bg-green-100 text-green-800 text-xs">{{ objet.get_categorie_display }}</span>
+      <span class="px-2 py-1 rounded bg-purple-100 text-purple-800 text-xs">{{ objet.get_style_display }}</span>
+      <span class="px-2 py-1 rounded bg-orange-100 text-orange-800 text-xs">{{ objet.get_zone_display }}</span>
+    </div>
+    <div class="flex justify-between mt-6">
+      {% if prev_obj %}<a href="{% url detail_url prev_obj.pk %}" class="text-blue-600 hover:underline">&larr; Précédent</a>{% endif %}
+      {% if next_obj %}<a href="{% url detail_url next_obj.pk %}" class="text-blue-600 hover:underline">Suivant &rarr;</a>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

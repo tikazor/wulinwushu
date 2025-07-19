@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[70vh] bg-gray-50 py-8">
+  <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl p-8 relative">
+    <h1 class="text-3xl font-bold mb-2">{{ objet.title }}</h1>
+    <p class="text-gray-600 mb-2">🗓 {{ objet.date|date:"d/m/Y" }}</p>
+    <div class="mb-2 flex flex-wrap gap-2">
+      {% for anim in objet.animateurs.all %}
+        <span class="bg-indigo-100 text-indigo-800 text-xs rounded px-2 py-1">👨‍🏫 {{ anim.get_full_name|default:anim.username }}</span>
+      {% endfor %}
+      <span class="bg-green-100 text-green-800 text-xs rounded px-2 py-1">Niveau : {{ objet.get_niveau_display }}</span>
+    </div>
+    {% if objet.participants %}
+      <div class="mb-2"><span class="font-semibold">Participants :</span> {{ objet.participants }}</div>
+    {% endif %}
+    <div class="mb-4"><span class="font-semibold">Durée totale :</span> {{ objet.duree_totale }} min</div>
+    <div class="my-4">
+      <h2 class="text-lg font-semibold mb-1">Séquences :</h2>
+      <ul class="list-disc ml-6 text-gray-700">
+        {% for block in objet.sequences %}
+          <li class="mb-1">{{ block.value.titre }} <span class="text-xs text-gray-400">({{ block.value.type_sequence }})</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="flex justify-between mt-6">
+      {% if prev_obj %}<a href="{% url detail_url prev_obj.pk %}" class="text-blue-600 hover:underline">&larr; Précédent</a>{% endif %}
+      {% if next_obj %}<a href="{% url detail_url next_obj.pk %}" class="text-blue-600 hover:underline">Suivant &rarr;</a>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

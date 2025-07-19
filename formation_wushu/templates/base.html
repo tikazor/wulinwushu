@@ -1,0 +1,129 @@
+{% load static wagtailcore_tags wagtailuserbar %}
+
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>
+      {% block title %}
+        {% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}
+      {% endblock %}
+      {% block title_suffix %}
+        {% wagtail_site as current_site %}
+        {% if current_site and current_site.site_name %} - {{ current_site.site_name }}{% endif %}
+      {% endblock %}
+    </title>
+
+    {% if page.search_description %}
+      <meta name="description" content="{{ page.search_description }}" />
+    {% endif %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% if request.in_preview_panel %}
+      <base target="_blank">
+    {% endif %}
+
+    <link rel="stylesheet" href="{% static 'css/formation_wushu.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+  </head>
+
+  <body class="bg-gray-50 {% block body_class %}{% endblock %}">
+    {% wagtailuserbar %}
+
+    <!-- 🧭 Barre de navigation -->
+    <header class="bg-gray-900 shadow">
+      <nav class="container mx-auto flex flex-wrap items-center justify-between py-3 px-6">
+        <div class="flex items-center gap-5">
+          <a href="/" class="text-white text-xl font-bold hover:text-blue-400">🏠 Accueil</a>
+          <div class="relative group">
+            <a href="/modules/" class="text-white hover:text-blue-400 font-medium flex items-center">
+              📚 Nos cours
+              <svg class="w-4 h-4 ml-1 inline-block text-blue-300" fill="none" stroke="currentColor" stroke-width="2"
+                   viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </a>
+            <ul class="absolute left-0 top-full hidden group-hover:block bg-gray-800 shadow-xl rounded z-20 min-w-[180px]">
+              <li><a href="/modules/seances/"    class="block px-4 py-2 hover:bg-gray-700 text-white">Séances</a></li>
+              <li><a href="/modules/sequences/"  class="block px-4 py-2 hover:bg-gray-700 text-white">Séquences</a></li>
+              <li><a href="/modules/ateliers/"   class="block px-4 py-2 hover:bg-gray-700 text-white">Ateliers</a></li>
+              <li><a href="/modules/techniques/" class="block px-4 py-2 hover:bg-gray-700 text-white">Techniques</a></li>
+            </ul>
+          </div>
+        </div>
+        <ul class="flex gap-5 items-center">
+          {% if user.is_authenticated %}
+            <li>
+              <a href="/espace/" class="text-white hover:text-blue-400 flex items-center">
+                👤 Mon espace
+                <span class="ml-2 px-2 py-1 rounded bg-gray-700 text-xs text-gray-200 capitalize">
+                  {{ user.role|default_if_none:"" }}
+                </span>
+              </a>
+            </li>
+            {% if user.role == "animateur" %}
+              <li><a href="/suivi/global/" class="text-white hover:text-blue-400">📊 Suivi global</a></li>
+              <li><a href="/suivi/filtre/" class="text-white hover:text-blue-400">🔎 Suivi filtre</a></li>
+            {% endif %}
+            <li>
+              <a href="{% url 'logout' %}" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
+                🚪 Déconnexion
+              </a>
+            </li>
+          {% else %}
+            <li>
+              <a href="{% url 'login' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                🔐 Connexion
+              </a>
+            </li>
+            <li>
+              <a href="/signup/" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
+                📝 Créer un compte
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+
+{# --- BANDEAU ENSEIGNANTS / ADMIN : accès rapide création --- #}
+{% if user.is_authenticated %}
+  {% if user.role == "animateur" or user.is_superuser %}
+    <div class="bg-gray-100 border-b border-gray-300 shadow-inner px-4 py-2 flex flex-wrap gap-3 items-center justify-center sticky top-0 z-30">
+      <a href="/admin/pages/add/fiches/fichepage/3/" class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl shadow hover:bg-blue-700 transition" target="_blank">
+    <span class="text-xl">🗂️</span> Nouvelle séance
+</a>
+
+      <a href="{% url 'creer_sequence' %}" class="inline-flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-xl shadow hover:bg-purple-700 transition">
+        <span class="text-xl">📑</span> Nouvelle séquence
+      </a>
+      <a href="{% url 'creer_atelier' %}" class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition">
+        <span class="text-xl">🛠️</span> Nouvel atelier
+      </a>
+      <a href="{% url 'creer_technique' %}" class="inline-flex items-center gap-2 bg-pink-600 text-white px-4 py-2 rounded-xl shadow hover:bg-pink-700 transition">
+        <span class="text-xl">🥋</span> Nouvelle technique
+      </a>
+    </div>
+  {% endif %}
+{% endif %}
+
+
+    <!-- 🔽 Contenu principal -->
+    <main class="container mx-auto px-4 py-8">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- 📦 Footer rapide -->
+    <footer class="bg-gray-900 text-gray-400 text-sm py-4 text-center mt-8">
+      <div>
+        © {{ current_site.site_name|default:"Wulin Wushu" }} – {% now "Y" %}.
+        <a href="https://github.com/ton-projet" class="text-blue-300 hover:underline ml-2">GitHub</a>
+        | Contact : <a href="mailto:contact@club.fr" class="hover:underline">contact@club.fr</a>
+      </div>
+    </footer>
+
+    <!-- 📦 JS global -->
+    <script src="{% static 'js/formation_wushu.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

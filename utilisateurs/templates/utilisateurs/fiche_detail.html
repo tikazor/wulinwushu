@@ -1,0 +1,50 @@
+{# utilisateurs/templates/utilisateurs/fiche_detail.html #}
+{% extends "base.html" %}
+{% load wagtailimages_tags %}
+
+{% block content %}
+  <article class="card-detail">
+    <h1>{{ fiche.title }}</h1>
+    <p><strong>Date :</strong> {{ fiche.date|date:"d/m/Y" }}</p>
+    <p><strong>Durée totale :</strong> {{ fiche.duree_totale }} min</p>
+    <p><strong>Animateurs :</strong> {{ fiche.animateurs.all|join:", " }}</p>
+    <p><strong>Participants :</strong> {{ fiche.participants }}</p>
+    <hr>
+    {% for seq in sequences_data %}
+      <section>
+        <h2>{{ seq.titre }} ({{ seq.type }}) — {{ seq.dur_total }} min</h2>
+        <ul>
+          {% for atelier in seq.ateliers %}
+            <li>
+              <strong>{{ atelier.duree }} min</strong>
+              {% if atelier.consigne %} – {{ atelier.consigne }}{% endif %}
+              {% if atelier.techniques %}
+                <ul>
+                  {% for tech in atelier.techniques %}
+                    <li>
+                      {% if tech.image %}{% image tech.image original as img %}<img src="{{ img.url }}" width="40">{% endif %}
+                      {{ tech.nom }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+      <hr>
+    {% endfor %}
+    {# Afficher le bouton "Valider cette fiche" seulement si pas déjà validée #}
+    {% if not est_validee %}
+  <form method="post" action="{% url 'valider_fiche' fiche.slug %}">
+    {% csrf_token %}
+    <button type="submit" class="btn bg-green-600 text-white rounded-lg px-4 py-2 mt-4 hover:bg-green-700">Valider cette fiche</button>
+  </form>
+{% else %}
+  <div class="mt-4 text-green-600 font-bold flex items-center gap-2">
+    <span>✅ Fiche validée !</span>
+  </div>
+{% endif %}
+
+  </article>
+{% endblock %}

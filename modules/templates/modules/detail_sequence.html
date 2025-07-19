@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[70vh] bg-gray-50 py-8">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
+    <h1 class="text-3xl font-bold mb-2">{{ objet.titre }}</h1>
+    <div class="mb-2">
+      <span class="bg-blue-100 text-blue-800 text-xs rounded px-2 py-1">{{ objet.get_type_sequence_display }}</span>
+      <span class="bg-green-100 text-green-800 text-xs rounded px-2 py-1">{{ objet.ateliers.count }} atelier{% if objet.ateliers.count > 1 %}s{% endif %}</span>
+    </div>
+    <div class="my-4">
+      <h2 class="font-semibold mb-1">Ateliers inclus :</h2>
+      <ul class="list-disc ml-6 text-gray-700">
+        {% for at in objet.ateliers.all %}
+          <li>{{ at }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="mb-4 text-gray-700">Durée totale : {{ objet.duree_totale }} min</div>
+    <div class="flex justify-between mt-6">
+      {% if prev_obj %}<a href="{% url detail_url prev_obj.pk %}" class="text-blue-600 hover:underline">&larr; Précédent</a>{% endif %}
+      {% if next_obj %}<a href="{% url detail_url next_obj.pk %}" class="text-blue-600 hover:underline">Suivant &rarr;</a>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

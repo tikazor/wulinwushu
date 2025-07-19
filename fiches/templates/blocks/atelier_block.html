@@ -1,0 +1,37 @@
+{% load wagtailimages_tags %}
+
+<div class="atelier-block p-4 border rounded mb-4">
+
+  {% if self.techniques %}
+    <h4 class="font-bold text-lg mb-1">Techniques utilisées :</h4>
+    <ul class="list-disc pl-5 mb-2">
+      {% for technique in self.techniques %}
+        <li>
+          {{ technique.nom }}
+          {% if technique.nom_pinyin %} ({{ technique.nom_pinyin }}){% endif %}
+          {% if technique.traduction %} – {{ technique.traduction }}{% endif %}
+        </li>
+        {# inclus le rendu média complet de la technique #}
+        {% include "includes/technique_card.html" with technique=technique %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if self.duree %}
+    <p class="mb-2"><strong>Durée :</strong> {{ self.duree }} min</p>
+  {% endif %}
+
+  {% if self.consigne %}
+    <div class="mb-2">
+      <strong>Consigne :</strong>
+      {{ self.consigne|richtext }}
+    </div>
+  {% endif %}
+
+  {% if self.illustration %}
+    <div class="mt-2">
+      {% image self.illustration fill-400x300 class="rounded shadow" %}
+    </div>
+  {% endif %}
+
+</div>

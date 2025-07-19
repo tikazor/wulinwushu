@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto py-8">
+  <h1 class="text-3xl font-bold mb-6 text-center">Techniques</h1>
+  <form method="get" class="mb-6 flex gap-2 justify-center">
+    <input type="text" name="q" placeholder="Recherche (nom, pinyin, description...)" value="{{ q }}" class="input input-bordered w-full max-w-xs rounded-lg px-4 py-2 border border-gray-300">
+    <button type="submit" class="btn bg-blue-600 text-white rounded-lg px-4 py-2">🔍</button>
+    {% if q %}<a href="{% url 'liste_techniques' %}" class="text-red-500 ml-2">✖ Effacer</a>{% endif %}
+  </form>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for tech in techniques %}
+      <a href="{% url 'detail_technique' tech.pk %}" class="block group">
+        <div class="bg-white rounded-2xl shadow-lg p-5 flex flex-col hover:scale-105 transition-all duration-300 h-full group-hover:border-blue-500 border border-transparent">
+          {% if tech.image %}
+            <img src="{{ tech.image.url }}" alt="{{ tech.nom }}" class="w-full h-32 object-cover rounded-xl mb-3">
+          {% endif %}
+          <h2 class="text-lg font-semibold mb-1 group-hover:text-blue-600">{{ tech.nom_pinyin|default:tech.nom }}</h2>
+          <div class="text-xs text-gray-500 mb-2">
+            {{ tech.traduction }}{% if tech.nom_chinois %} — {{ tech.nom_chinois }}{% endif %}
+          </div>
+          <div class="text-xs text-indigo-800 bg-indigo-100 rounded px-2 py-1 mb-1 w-max">
+            {{ tech.get_categorie_display }}
+          </div>
+          <div class="text-xs text-green-700 bg-green-50 rounded px-2 py-1 mb-1 w-max">
+            {{ tech.get_style_display }}
+          </div>
+          <p class="text-sm text-gray-600 mt-1 mb-2">{{ tech.description|truncatewords:16 }}</p>
+        </div>
+      </a>
+    {% empty %}
+      <div class="col-span-full text-center text-gray-500">Aucune technique trouvée.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
