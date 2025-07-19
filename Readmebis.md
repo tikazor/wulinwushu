@@ -141,3 +141,8 @@ Documentation à enrichir après premier run Docker
 
 .\env\Scripts\activate
 deactivate
+
+
+git add .
+git commit -m "Base Django connectée à PostgreSQL, migrations OK"
+git push
