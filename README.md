@@ -20,8 +20,8 @@ MAJ 14/07/2025
 3	📚 Fiches & modules (CMS Wagtail)	Modèles FichePage, Séquence, Atelier, Technique	✅ Terminé	Création via Wagtail OK
 4	📈 Suivi progression	Validation fiche, suivi global + filtre animateur	✅ Terminé	Routes /suivi/global & /suivi/filtre fonctionnelles
 5	🧩 Interactivité (quiz, commentaires)	Quiz QCM/VraiFaux, retour utilisateur	⏸️ En pause	Mise en attente (repris après jalon 6 ou 10)
-6	🧭 Interface & navigation	Menu haut avec rôles, espace perso, responsive	🛠️ En cours	Menu HTML en place, à finaliser selon Tailwind/UX
-7	🐳 Dockerisation locale	Dockerfile prêt, docker-compose.yml à créer	🚧 À faire	Non démarré
+6	🧭 Interface & navigation	Menu haut avec rôles, espace perso, responsive	🛠️ En cours	Menu HTML en place, 	✅ partiellement terminé à finaliser selon Tailwind/UX
+7	🐳 Dockerisation locale	Dockerfile prêt, docker-compose.yml à créer	🚧 À faire		✅ Terminé
 8	🏠 Déploiement sur NAS	Nginx/gunicorn, volumes médias	🚧 À faire	En attente de Dockerisation
 9	🧪 Tests & contenu de démo	Données fictives, tests bout en bout	🚧 À faire	Dépend des jalons 5 et 6
 10	📘 Documentation & maintenance	Explication de la structure, guides, maintenance	🚧 À faire	README à enrichir avec déploiement & structure Wagtail
@@ -191,6 +191,8 @@ Développer une plateforme interactive pour les animateurs et pratiquants de cou
 - Mise en page avec Tailwind ou Wagtail Templates
 - Page d'accueil
 
+- ✅ **partiellement Terminé**
+
 **⏱️ Estimation : 2,5 jours**
 
 ---
@@ -201,6 +203,8 @@ Développer une plateforme interactive pour les animateurs et pratiquants de cou
 - Tests conteneur
 
 **⏱️ Estimation : 1,5 jours**
+
+✅ **Terminé**
 
 ---
 
