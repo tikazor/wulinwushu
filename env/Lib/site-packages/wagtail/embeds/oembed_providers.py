@@ -5,35 +5,11 @@ animoto = {
     ],
 }
 
-app_net = {
-    "endpoint": "https://alpha-api.app.net/oembed",
-    "urls": [
-        r"^https?://alpha\.app\.net/[^#?/]+/post/.+$",
-        r"^https?://photos\.app\.net/[^#?/]+/.+$",
-    ],
-}
-
 audioboom = {
     "endpoint": "https://audioboom.com/publishing/oembed.{format}",
     "urls": [
         r"^https?://audioboom\.com/boos/.+$",
         r"^https?://audioboom\.com/posts/.+$",
-    ],
-}
-
-bambuser = {
-    "endpoint": "http://api.bambuser.com/oembed.{format}",
-    "urls": [
-        r"^http://bambuser\.com/channel/[^#?/]+/broadcast/.+$",
-        r"^http://bambuser\.com/channel/.+$",
-        r"^http://bambuser\.com/v/.+$",
-    ],
-}
-
-blip_tv = {
-    "endpoint": "http://blip.tv/oembed/",
-    "urls": [
-        r"^http://[-\w]+\.blip\.tv/.+$",
     ],
 }
 
@@ -85,6 +61,14 @@ coub = {
     "urls": [
         r"^https?://coub\.com/view/.+$",
         r"^https?://coub\.com/embed/.+$",
+    ],
+}
+
+crowdsignal = {
+    "endpoint": "https://api.crowdsignal.com/oembed",
+    "urls": [
+        r"^https?://(?:[-\w]+\.)?polldaddy\.com/.+$",
+        r"^https?://poll.fm/\d+$",
     ],
 }
 
@@ -384,41 +368,6 @@ pinterest = {
 }
 
 
-polldaddy = {
-    "endpoint": "https://polldaddy.com/oembed/",
-    "urls": [
-        r"^https?://(?:[-\w]+\.)?polldaddy\.com/.+$",
-    ],
-}
-
-
-polleverywhere = {
-    "endpoint": "https://www.polleverywhere.com/services/oembed/",
-    "urls": [
-        r"^https?://www\.polleverywhere\.com/polls/.+$",
-        r"^https?://www\.polleverywhere\.com/multiple_choice_polls/.+$",
-        r"^https?://www\.polleverywhere\.com/free_text_polls/.+$",
-    ],
-}
-
-qik = {
-    "endpoint": "http://qik.com/api/oembed.{format}",
-    "urls": [
-        r"^http://qik\.com/.+$",
-        r"^http://qik\.ly/.+$",
-    ],
-}
-
-
-rdio = {
-    "endpoint": "http://www.rdio.com/api/oembed",
-    "urls": [
-        r"^http://(?:wwww\.)?rdio\.com/people/[^#?/]+/playlists/.+$",
-        r"^http://[-\w]+\.rdio\.com/artist/[^#?/]+/album/.+$",
-    ],
-}
-
-
 reddit = {
     "endpoint": "https://www.reddit.com/oembed",
     "urls": [
@@ -426,13 +375,6 @@ reddit = {
     ],
 }
 
-
-revision3 = {
-    "endpoint": "http://revision3.com/api/oembed/",
-    "urls": [
-        r"^http://[-\w]+\.revision3\.com/.+$",
-    ],
-}
 
 roomshare = {
     "endpoint": "https://roomshare.jp/oembed.{format}",
@@ -583,14 +525,6 @@ ustream = {
 }
 
 
-vhx_tv = {
-    "endpoint": "http://vhx.tv/services/oembed.{format}",
-    "urls": [
-        r"^https?://(?:www\.)?vhx\.tv/.+$",
-    ],
-}
-
-
 videojug = {
     "endpoint": "http://www.videojug.com/oembed.{format}",
     "urls": [
@@ -689,10 +623,7 @@ youtube = {
 
 all_providers = [
     animoto,
-    app_net,
     audioboom,
-    bambuser,
-    blip_tv,
     cacoo,
     chirb,
     circuitlab,
@@ -700,6 +631,7 @@ all_providers = [
     clikthrough,
     collegehumor,
     coub,
+    crowdsignal,
     crowd_ranking,
     dailymile,
     dailymotion,
@@ -736,12 +668,7 @@ all_providers = [
     opera,
     photobucket,
     pinterest,
-    polldaddy,
-    polleverywhere,
-    qik,
-    rdio,
     reddit,
-    revision3,
     roomshare,
     sapo,
     screenr,
@@ -761,7 +688,6 @@ all_providers = [
     twitter,
     urtak,
     ustream,
-    vhx_tv,
     viddler,
     videojug,
     vidyard,

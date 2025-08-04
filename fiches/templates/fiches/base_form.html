@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-10">
-  <h1 class="text-3xl font-bold mb-6 text-blue-700 text-center">
+  <h1 class="text-3xl font-bold mb-6 text-rouge-charte text-center">
     {% block form_title %}Créer un élément{% endblock %}
   </h1>
   <form method="post" enctype="multipart/form-data" class="space-y-6">
@@ -22,12 +22,12 @@
         </div>
       {% endfor %}
     </div>
-    <button type="submit" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg transition">
+    <button type="submit" class="w-full bg-rouge-charte hover:bg-rouge-cramoisi text-white font-bold py-2 px-4 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-rouge-charte">
       {% block submit_label %}Enregistrer{% endblock %}
     </button>
   </form>
   <div class="text-center mt-6">
-    <a href="{% block retour_url %}{% url 'liste_seances' %}{% endblock %}" class="text-blue-500 hover:underline">
+    <a href="{% block retour_url %}{% url 'liste_seances' %}{% endblock %}" class="text-rouge-charte hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-charte rounded transition">
       ← Retour à la liste
     </a>
   </div>

@@ -582,7 +582,7 @@ class TestImageFind(TestCase):
     },
     WAGTAILAPI_BASE_URL="http://api.example.com",
 )
-@mock.patch("wagtail.contrib.frontend_cache.backends.HTTPBackend.purge")
+@mock.patch("wagtail.contrib.frontend_cache.backends.http.HTTPBackend.purge")
 class TestImageCacheInvalidation(TestCase):
     fixtures = ["demosite.json"]
 
@@ -597,11 +597,13 @@ class TestImageCacheInvalidation(TestCase):
         signal_handlers.unregister_signal_handlers()
 
     def test_resave_image_purges(self, purge):
-        get_image_model().objects.get(id=5).save()
+        with self.captureOnCommitCallbacks(execute=True):
+            get_image_model().objects.get(id=5).save()
 
         purge.assert_any_call("http://api.example.com/api/main/images/5/")
 
     def test_delete_image_purges(self, purge):
-        get_image_model().objects.get(id=5).delete()
+        with self.captureOnCommitCallbacks(execute=True):
+            get_image_model().objects.get(id=5).delete()
 
         purge.assert_any_call("http://api.example.com/api/main/images/5/")

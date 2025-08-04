@@ -6,13 +6,16 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from django.contrib.auth import views as auth_views
 from search import views as search_views
-from home.views import signup
+from home.views import signup, accueil
 from modules import views as modules_views
 from utilisateurs import views as user_views
 from modules import views as modules_views
+
 urlpatterns = [
     # Django admin
     path("django-admin/", admin.site.urls),
+
+    path('', accueil, name='accueil'),
 
     # Wagtail admin & documents
     path("admin/", include("wagtail.admin.urls")),
@@ -52,6 +55,7 @@ urlpatterns = [
     
 
     path("modules/", modules_views.liste_modules, name="liste_modules"),
+
 
 ]
 

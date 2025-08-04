@@ -1,0 +1,51 @@
+/* 🥋 Couleur de fond, boutons, titres */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.w-header {
+  background-color: #b22222 !important; /* rouge-charte */
+}
+
+.button,
+input[type=submit] {
+  background-color: #b22222 !important;
+  color: #fff !important;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s;
+}
+
+.button:hover,
+input[type=submit]:hover {
+  background-color: #8b1a1a !important; /* rouge plus sombre */
+}
+
+/* 🧾 Panels */
+.object .field {
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* 🧠 Typographie */
+h1, h2, h3, h4 {
+  color: #1f2937;
+}
+/* Personnalisation admin Wagtail */
+body {
+  background-color: #FF6863;
+}
+
+/* Exemples supplémentaires */
+h1, .c-sf-title {
+  color: #f8f8f8; /* */
+}
+
+/* Palette : Rouge profond #b22222 (cf. charte graphique) */
+#wagtail-sidebar,
+.wagtail-sidebar {
+  background-color: #b22222 !important;
+}

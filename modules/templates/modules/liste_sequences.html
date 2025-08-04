@@ -4,7 +4,10 @@
   <h1 class="text-3xl font-bold mb-6 text-center">Séquences</h1>
   <form method="get" class="mb-6 flex gap-2 justify-center">
     <input type="text" name="q" placeholder="Recherche (titre, type, atelier...)" value="{{ q }}" class="input input-bordered w-full max-w-xs rounded-lg px-4 py-2 border border-gray-300">
-    <button type="submit" class="btn bg-blue-600 text-white rounded-lg px-4 py-2">🔍</button>
+    <button type="submit" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
+  🔍
+</button>
+
     {% if q %}<a href="{% url 'liste_sequences' %}" class="text-red-500 ml-2">✖ Effacer</a>{% endif %}
   </form>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -29,7 +32,11 @@
           {% endif %}
         </div>
         {# Si tu veux un bouton de détail par séquence (active-le si une vue de détail existe) #}
-        {# <a href="{% url 'sequence_detail' seq.pk %}" class="mt-4 btn bg-blue-600 text-white rounded-lg px-4 py-2 self-end">Détail</a> #}
+        <a href="{% url 'detail_sequence' seq.pk %}"
+   class="mt-4 bg-rouge-charte text-white rounded-lg px-4 py-2 self-end hover:bg-rouge-cramoisi focus:ring-2 focus:ring-dore transition">
+  Détail
+</a>
+
       </div>
       </a>
     {% empty %}

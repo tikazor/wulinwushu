@@ -4,28 +4,38 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import render, get_object_or_404, redirect
 from fiches.models import FichePage
 from progression.models import ValidationFiche
+from utilisateurs.permissions import can_view_fiche
+
 
 @login_required
 def espace_utilisateur(request):
-    utilisateur = request.user
+    user = request.user
 
-    # Toutes les fiches publiées
-    fiches_publiées = FichePage.objects.live().public()
+    # 1️⃣ Toutes les fiches live() (QuerySet)
+    qs_live = FichePage.objects.live()
 
-    # Fiches validées par l'utilisateur
-    fiches_validées_ids = ValidationFiche.objects.filter(
-        utilisateur=utilisateur,
-        valide=True
-    ).values_list("fiche__id", flat=True)
+    # 2️⃣ On ne garde que celles que l'utilisateur peut voir
+    fiches_publiées = [fiche for fiche in qs_live if can_view_fiche(user, fiche)]
 
-    # Fiches non validées
-    fiches_non_validées = fiches_publiées.exclude(id__in=fiches_validées_ids)
-    fiches_validées = fiches_publiées.filter(id__in=fiches_validées_ids)
+    # 3️⃣ Récupère les IDs des fiches validées
+    valid_ids = set(
+        ValidationFiche.objects
+            .filter(utilisateur=user, valide=True)
+            .values_list("fiche_id", flat=True)
+    )
+
+    # 4️⃣ Sépare validées et non-validées
+    fiches_validées     = [f for f in fiches_publiées if f.id in valid_ids]
+    fiches_non_validées = [f for f in fiches_publiées if f.id not in valid_ids]
+
+    # 5️⃣ Calcule le taux de progression
+    taux = int(100 * len(fiches_validées) / len(fiches_publiées)) if fiches_publiées else 0
 
     return render(request, "utilisateurs/espace.html", {
-        "fiches_validées": fiches_validées,
+        "fiches_validées":     fiches_validées,
         "fiches_non_validées": fiches_non_validées,
-        "utilisateur": utilisateur,
+        "taux":                taux,
+        "utilisateur":         user,
     })
 
 @login_required

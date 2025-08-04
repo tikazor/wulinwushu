@@ -1,27 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="flex flex-col items-center justify-center min-h-[70vh] bg-gray-50 py-8">
+
+</p>
   <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
-    <h1 class="text-2xl font-bold mb-2">{{ objet }}</h1>
-    <div class="mb-2">
+    {% if objet.image %}
+  <img src="{{ objet.image.file.url }}" alt="{{ objet.nom }}" class="rounded-xl w-full h-48 object-cover mb-6 shadow" />
+  <p>DEBUG: {{ objet.image }} | {{ objet.image.file.url }}</p>
+
+
+
+{% endif %}
+    <h1 class="text-2xl font-bold mb-2 text-rouge-fraise">{{ objet }}</h1>
+    <div class="mb-4">
       <span class="bg-blue-100 text-blue-800 text-xs rounded px-2 py-1">Durée : {{ objet.duree }} min</span>
     </div>
     {% if objet.consigne %}
-      <div class="mb-3 text-gray-600"><span class="font-semibold">Consigne :</span><br>{{ objet.consigne|linebreaksbr }}</div>
+      <div class="mb-6 text-gray-600"><span class="font-semibold">Consigne :</span><br>{{ objet.consigne|linebreaksbr }}</div>
     {% endif %}
-    <div>
-      <h2 class="font-semibold mb-1">Techniques associées :</h2>
-      <ul class="list-disc ml-6 text-gray-700">
-        {% for tech in objet.techniques.all %}
-          <li>{{ tech }}</li>
-        {% empty %}
-          <li>Aucune technique liée.</li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="flex justify-between mt-6">
-      {% if prev_obj %}<a href="{% url detail_url prev_obj.pk %}" class="text-blue-600 hover:underline">&larr; Précédent</a>{% endif %}
-      {% if next_obj %}<a href="{% url detail_url next_obj.pk %}" class="text-blue-600 hover:underline">Suivant &rarr;</a>{% endif %}
+
+    <div class="mb-6">
+  <h2 class="font-semibold mb-2">Techniques associées :</h2>
+  <ul class="space-y-2">
+    {% for tech in objet.techniques.all %}
+      <li>
+        <a href="{% url 'detail_technique' tech.pk %}"
+           class="flex items-center gap-3 group rounded-xl py-2 px-1 transition hover:bg-gray-100 focus:bg-blue-50 w-full max-w-xs">
+          {% if tech.image %}
+            <img src="{{ tech.image.file.url }}"
+                 alt="{{ tech.nom }}"
+                 class="w-10 h-10 object-cover rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
+                 loading="lazy" />
+          {% else %}
+            <span class="w-10 h-10 flex items-center justify-center bg-gray-200 text-gray-400 rounded-lg text-xl flex-shrink-0">—</span>
+          {% endif %}
+          <span class="ml-2 text-base font-semibold group-hover:text-blue-600 truncate">
+            {{ tech.nom_pinyin|default:tech.nom }}
+          </span>
+        </a>
+      </li>
+    {% empty %}
+      <li class="text-gray-400">Aucune technique liée.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+
+
+      {% if prev_obj %}
+        <a href="{% url detail_url prev_obj.pk %}" class="text-rouge-fraise hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-fraise rounded transition">&larr; Précédent</a>
+      {% endif %}
+      {% if next_obj %}
+        <a href="{% url detail_url next_obj.pk %}" class="text-rouge-fraise hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-fraise rounded transition">Suivant &rarr;</a>
+      {% endif %}
     </div>
   </div>
 </div>

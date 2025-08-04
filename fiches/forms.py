@@ -7,9 +7,10 @@ from .blocks import SequenceBlock, SequenceChooserBlock
 class FichePageForm(forms.ModelForm):
     class Meta:
         model = FichePage
-        fields = ['title', 'date', 'niveau', 'animateurs', 'participants', 'sequences']
+        fields = "__all__"
         widgets = {
-            'sequences': forms.SelectMultiple(attrs={"size": 8, "class": "w-full rounded"})
+           'participants': forms.CheckboxSelectMultiple,
+            'sequences': forms.CheckboxSelectMultiple,
         }
 
 class SequenceForm(forms.ModelForm):

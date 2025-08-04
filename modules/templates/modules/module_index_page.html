@@ -2,49 +2,64 @@
 {% load wagtailcore_tags %}
 
 {% block content %}
-  <h1>{{ page.title }}</h1>
+<div class="container mx-auto px-4 py-10">
+  <h1 class="text-3xl md:text-4xl font-bold text-rouge-charte text-center mb-10">{{ page.title }}</h1>
 
-  <section>
-    <h2>🔖 Séances (Fiches pédagogiques)</h2>
-    <ul>
+  <section class="mb-8">
+    <h2 class="text-xl font-semibold text-dore mb-3">🔖 Séances (Fiches pédagogiques)</h2>
+    <ul class="space-y-2">
       {% for fiche in fiches %}
-        <li><a href="{{ fiche.url }}">{{ fiche.title }} — {{ fiche.date }}</a></li>
+        <li>
+          <a href="{{ fiche.url }}" class="text-rouge-charte hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-charte rounded transition">
+            {{ fiche.title }} — {{ fiche.date }}
+          </a>
+        </li>
       {% empty %}
-        <li>Aucune fiche disponible.</li>
+        <li class="text-gray-400">Aucune fiche disponible.</li>
       {% endfor %}
     </ul>
   </section>
 
-  <section>
-    <h2>🗂️ Séquences</h2>
-    <ul>
+  <section class="mb-8">
+    <h2 class="text-xl font-semibold text-dore mb-3">🗂️ Séquences</h2>
+    <ul class="space-y-2">
       {% for seq in sequences %}
-        <li>{{ seq.titre }} ({{ seq.type_sequence }}) — {{ seq.somme_duree }} min</li>
+        <li>
+          <span class="font-semibold text-rouge-cramoisi">{{ seq.titre }}</span>
+          <span class="text-gray-500">({{ seq.type_sequence }}) — {{ seq.somme_duree }} min</span>
+        </li>
       {% empty %}
-        <li>Aucune séquence définie.</li>
+        <li class="text-gray-400">Aucune séquence définie.</li>
       {% endfor %}
     </ul>
   </section>
 
-  <section>
-    <h2>🔧 Ateliers</h2>
-    <ul>
+  <section class="mb-8">
+    <h2 class="text-xl font-semibold text-dore mb-3">🔧 Ateliers</h2>
+    <ul class="space-y-2">
       {% for at in ateliers %}
-        <li>{{ at.technique }} – {{ at.duree }} min</li>
+        <li>
+          <span class="font-semibold text-rouge-fraise">{{ at.technique }}</span>
+          <span class="text-gray-500">– {{ at.duree }} min</span>
+        </li>
       {% empty %}
-        <li>Aucun atelier.</li>
+        <li class="text-gray-400">Aucun atelier.</li>
       {% endfor %}
     </ul>
   </section>
 
   <section>
-    <h2>🥋 Techniques</h2>
-    <ul>
+    <h2 class="text-xl font-semibold text-dore mb-3">🥋 Techniques</h2>
+    <ul class="space-y-2">
       {% for tech in techniques %}
-        <li>{{ tech.get_nom_pinyin_display }} ({{ tech.description }})</li>
+        <li>
+          <span class="font-semibold text-rouge-nacarat">{{ tech.get_nom_pinyin_display }}</span>
+          <span class="text-gray-500">({{ tech.description }})</span>
+        </li>
       {% empty %}
-        <li>Aucune technique référencée.</li>
+        <li class="text-gray-400">Aucune technique référencée.</li>
       {% endfor %}
     </ul>
   </section>
+</div>
 {% endblock %}

@@ -1,28 +1,31 @@
-{# utilisateurs/templates/utilisateurs/fiche_detail.html #}
 {% extends "base.html" %}
 {% load wagtailimages_tags %}
 
 {% block content %}
-  <article class="card-detail">
-    <h1>{{ fiche.title }}</h1>
-    <p><strong>Date :</strong> {{ fiche.date|date:"d/m/Y" }}</p>
-    <p><strong>Durée totale :</strong> {{ fiche.duree_totale }} min</p>
-    <p><strong>Animateurs :</strong> {{ fiche.animateurs.all|join:", " }}</p>
-    <p><strong>Participants :</strong> {{ fiche.participants }}</p>
-    <hr>
+  <article class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-8">
+    <h1 class="text-3xl font-bold text-rouge-charte mb-4">{{ fiche.title }}</h1>
+    <p class="text-sm text-gray-700 mb-2"><strong>Date :</strong> {{ fiche.date|date:"d/m/Y" }}</p>
+    <p class="text-sm text-gray-700 mb-2"><strong>Durée totale :</strong> {{ fiche.duree_totale }} min</p>
+    <p class="text-sm text-gray-700 mb-2"><strong>Animateurs :</strong> {{ fiche.animateurs.all|join:", " }}</p>
+    <p class="text-sm text-gray-700 mb-4"><strong>Participants :</strong> {{ fiche.participants }}</p>
+
+    <hr class="my-6 border-gray-300">
+
     {% for seq in sequences_data %}
-      <section>
-        <h2>{{ seq.titre }} ({{ seq.type }}) — {{ seq.dur_total }} min</h2>
-        <ul>
+      <section class="mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">
+          {{ seq.titre }} ({{ seq.type }}) — {{ seq.dur_total }} min
+        </h2>
+        <ul class="list-disc list-inside space-y-2 text-gray-700">
           {% for atelier in seq.ateliers %}
             <li>
               <strong>{{ atelier.duree }} min</strong>
               {% if atelier.consigne %} – {{ atelier.consigne }}{% endif %}
               {% if atelier.techniques %}
-                <ul>
+                <ul class="list-disc list-inside ml-4 mt-1 text-sm text-gray-600 space-y-1">
                   {% for tech in atelier.techniques %}
-                    <li>
-                      {% if tech.image %}{% image tech.image original as img %}<img src="{{ img.url }}" width="40">{% endif %}
+                    <li class="flex items-center gap-2">
+                      {% if tech.image %}{% image tech.image original as img %}<img src="{{ img.url }}" class="w-10 h-10 object-cover rounded" alt="{{ tech.nom }}">{% endif %}
                       {{ tech.nom }}
                     </li>
                   {% endfor %}
@@ -32,19 +35,20 @@
           {% endfor %}
         </ul>
       </section>
-      <hr>
+      <hr class="my-6 border-gray-200">
     {% endfor %}
-    {# Afficher le bouton "Valider cette fiche" seulement si pas déjà validée #}
-    {% if not est_validee %}
-  <form method="post" action="{% url 'valider_fiche' fiche.slug %}">
-    {% csrf_token %}
-    <button type="submit" class="btn bg-green-600 text-white rounded-lg px-4 py-2 mt-4 hover:bg-green-700">Valider cette fiche</button>
-  </form>
-{% else %}
-  <div class="mt-4 text-green-600 font-bold flex items-center gap-2">
-    <span>✅ Fiche validée !</span>
-  </div>
-{% endif %}
 
+    {% if not est_validee %}
+      <form method="post" action="{% url 'valider_fiche' fiche.slug %}">
+        {% csrf_token %}
+        <button type="submit" class="bg-green-600 text-white font-semibold px-5 py-2 rounded-lg mt-4 hover:bg-green-700 transition focus:outline-none focus:ring-2 focus:ring-green-600">
+          ✅ Valider cette fiche
+        </button>
+      </form>
+    {% else %}
+      <div class="mt-4 text-green-600 font-bold flex items-center gap-2">
+        <span>✅ Fiche validée !</span>
+      </div>
+    {% endif %}
   </article>
 {% endblock %}

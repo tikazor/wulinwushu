@@ -1,31 +1,119 @@
 {% extends "base.html" %}
+{% load dict_extras %}
 {% block content %}
 <div class="flex flex-col items-center justify-center min-h-[70vh] bg-gray-50 py-8">
-  <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl p-8 relative">
-    <h1 class="text-3xl font-bold mb-2">{{ objet.title }}</h1>
+
+  <!-- PARTIE 1 : Séquences -->
+  <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl p-8 mb-8">
+    <h1 class="text-3xl font-bold mb-2 text-rouge-charte">{{ objet.title }}</h1>
     <p class="text-gray-600 mb-2">🗓 {{ objet.date|date:"d/m/Y" }}</p>
-    <div class="mb-2 flex flex-wrap gap-2">
+    <div class="mb-4 flex flex-wrap gap-2">
       {% for anim in objet.animateurs.all %}
         <span class="bg-indigo-100 text-indigo-800 text-xs rounded px-2 py-1">👨‍🏫 {{ anim.get_full_name|default:anim.username }}</span>
       {% endfor %}
       <span class="bg-green-100 text-green-800 text-xs rounded px-2 py-1">Niveau : {{ objet.get_niveau_display }}</span>
     </div>
-    {% if objet.participants %}
-      <div class="mb-2"><span class="font-semibold">Participants :</span> {{ objet.participants }}</div>
-    {% endif %}
-    <div class="mb-4"><span class="font-semibold">Durée totale :</span> {{ objet.duree_totale }} min</div>
-    <div class="my-4">
-      <h2 class="text-lg font-semibold mb-1">Séquences :</h2>
-      <ul class="list-disc ml-6 text-gray-700">
-        {% for block in objet.sequences %}
-          <li class="mb-1">{{ block.value.titre }} <span class="text-xs text-gray-400">({{ block.value.type_sequence }})</span></li>
+    {% if objet.participants.all %}
+  <div class="mb-4"><span class="font-semibold">Participants :</span>
+    {% for user in objet.participants.all %}
+      {{ user.get_full_name|default:user.username }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+    <div class="mb-6"><span class="font-semibold">Durée totale :</span> {{ objet.duree_totale }} min</div>
+    <div class="my-6">
+      <h2 class="text-lg font-semibold mb-2">Séquences de la séance :</h2>
+      <div class="flex flex-wrap gap-4">
+        {% for seq in all_sequences %}
+          <a href="{% url 'detail_sequence' seq.pk %}" class="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2 hover:bg-blue-100 transition min-w-[220px] w-full sm:w-auto">
+            {% if seq.image %}
+                  <img src="{{ seq.image.file.url }}"
+                   alt="{{ seq.titre }}"
+                   class="w-12 h-12 object-cover rounded-xl border border-gray-200 shadow-sm flex-shrink-0" />
+            {% else %}
+              <span class="w-12 h-12 flex items-center justify-center bg-gray-300 text-gray-500 rounded-xl text-xl">–</span>
+            {% endif %}
+            <span class="text-base font-semibold truncate">{{ seq.titre }}</span>
+            <span class="ml-auto text-xs text-gray-500 bg-gray-200 rounded px-2 py-0.5">{{ seq.duree_totale }} min</span>
+          </a>
         {% endfor %}
-      </ul>
+      </div>
     </div>
-    <div class="flex justify-between mt-6">
-      {% if prev_obj %}<a href="{% url detail_url prev_obj.pk %}" class="text-blue-600 hover:underline">&larr; Précédent</a>{% endif %}
-      {% if next_obj %}<a href="{% url detail_url next_obj.pk %}" class="text-blue-600 hover:underline">Suivant &rarr;</a>{% endif %}
+    <div class="flex justify-between mt-8">
+      {% if prev_obj %}
+        <a href="{% url detail_url prev_obj.pk %}" class="text-rouge-charte hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-charte rounded transition">&larr; Précédent</a>
+      {% endif %}
+      {% if next_obj %}
+        <a href="{% url detail_url next_obj.pk %}" class="text-rouge-charte hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-charte rounded transition">Suivant &rarr;</a>
+      {% endif %}
     </div>
   </div>
+
+  <!-- PARTIE 2 : Ateliers -->
+  <div class="w-full max-w-xl bg-white rounded-2xl shadow-xl p-6 mb-8">
+    <h2 class="text-lg font-bold mb-4 text-rouge-cramoisi">Ateliers utilisés dans cette séance</h2>
+    <div class="flex flex-wrap gap-4">
+      {% for at in unique_ateliers %}
+        <a href="{% url 'detail_atelier' at.pk %}" class="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2 hover:bg-blue-100 transition min-w-[220px] w-full sm:w-auto">
+          {% if at.image %}
+            <img src="{{ at.image.file.url }}"
+                 alt="{{ at.nom|default:at }}"
+                 class="w-12 h-12 object-cover rounded-xl border border-gray-200 shadow-sm flex-shrink-0" />
+          {% else %}
+            <span class="w-12 h-12 flex items-center justify-center bg-gray-300 text-gray-500 rounded-xl text-xl">–</span>
+          {% endif %}
+          <span class="text-base font-semibold truncate">{{ at.nom|default:at }}</span>
+          <span class="ml-auto text-xs text-gray-500 bg-gray-200 rounded px-2 py-0.5">{{ at.duree }} min</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- PARTIE 3 : Techniques -->
+  <div class="w-full max-w-xl bg-white rounded-2xl shadow-xl p-6">
+    <h2 class="text-lg font-bold mb-4 text-rouge-cramoisi">Techniques utilisées dans cette séance</h2>
+    <ul class="space-y-3">
+      {% for tech in unique_techs %}
+        <li>
+          <div class="flex items-center gap-4 rounded-xl p-2 group hover:bg-gray-100 focus:bg-blue-50 transition">
+            {% if tech.image %}
+              <img src="{{ tech.image.file.url }}"
+                   alt="{{ tech.nom }}"
+                   class="w-10 h-10 object-cover rounded-xl border border-gray-200 shadow-sm flex-shrink-0" />
+            {% else %}
+              <span class="w-10 h-10 flex items-center justify-center bg-gray-200 text-gray-400 rounded-xl text-xl flex-shrink-0">—</span>
+            {% endif %}
+            <a href="{% url 'detail_technique' tech.pk %}" class="text-base font-semibold group-hover:text-blue-600 truncate flex-1">
+              {{ tech.nom_pinyin|default:tech.nom }}
+            </a>
+            <span class="ml-2 bg-indigo-100 text-indigo-700 rounded-full px-2 py-0.5 text-xs font-bold">{{ tech_counts|get_item:tech }}×</span>
+          </div>
+          <!-- Ateliers contenant cette technique -->
+          <div class="flex flex-wrap gap-3 ml-14 mt-1">
+            {% for at in unique_ateliers %}
+              {% if tech in at.techniques.all %}
+                <a href="{% url 'detail_atelier' at.pk %}" class="flex items-center gap-2 bg-gray-100 rounded-lg px-2 py-1 hover:bg-blue-100 transition min-w-[120px]">
+                  {% if at.image %}
+                    <img src="{{ at.image.file.url }}"
+                         alt="{{ at.nom|default:at }}"
+                         class="w-7 h-7 object-cover rounded-md border border-gray-200 shadow-sm flex-shrink-0" />
+                  {% else %}
+                    <span class="w-7 h-7 flex items-center justify-center bg-gray-300 text-gray-500 rounded-md text-xs">–</span>
+                  {% endif %}
+                  <span class="text-xs font-semibold truncate max-w-[70px]">{{ at.nom|default:at }}</span>
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </li>
+      {% empty %}
+        <li class="text-gray-400">Aucune technique répertoriée dans cette séance.</li>
+      {% endfor %}
+    </ul>
+  </div>
+<p>DEBUG séquences : {{ all_sequences }}</p>
+<p>DEBUG ateliers : {{ unique_ateliers }}</p>
+<p>DEBUG techniques : {{ unique_techs }}</p>
+
 </div>
 {% endblock %}

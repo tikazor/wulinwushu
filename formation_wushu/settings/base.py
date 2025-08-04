@@ -1,10 +1,12 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
+from django.contrib.messages import constants as messages
+
 
 load_dotenv()  # Charge .env
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 PROJECT_DIR = BASE_DIR  # pour éviter toute confusion
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -24,6 +26,7 @@ INSTALLED_APPS = [
     "modules.apps.ModulesConfig",
     "utilisateurs.apps.UtilisateursConfig",
     "fiches",
+    "widget_tweaks",
     "wagtail_modeladmin",
     "progression",
     "import_export",
@@ -66,7 +69,10 @@ ROOT_URLCONF = "formation_wushu.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(PROJECT_DIR, "templates")],
+        "DIRS": [
+            os.path.join(PROJECT_DIR, "templates"),  # racine projet
+            os.path.join(PROJECT_DIR, "formation_wushu", "templates"),  # <-- AJOUTE CETTE LIGNE !
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -106,14 +112,19 @@ USE_TZ = True
 
 # --- ⚠️ Cette section est corrigée :
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")    # <-- Ici collectstatic va tout copier (NE PAS TOUCHER à la main)
+print("DEBUG: BASE_DIR =", BASE_DIR)
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+print("DEBUG: STATIC_ROOT =", STATIC_ROOT)
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),  # <-- Ici tu mets tes fichiers statiques persos (css/js/images du projet)
+    os.path.join(BASE_DIR, "formation_wushu","static"),  # <-- Ici tu mets tes fichiers statiques persos (css/js/images du projet)
 ]
 # ------------------------------------
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+
+
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -139,11 +150,25 @@ WAGTAILSEARCH_BACKENDS = {
     }
 }
 
+
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'bg-gray-800',
+    messages.INFO: 'bg-blue-600',
+    messages.SUCCESS: 'bg-green-600',
+    messages.WARNING: 'bg-yellow-500',
+    messages.ERROR: 'bg-red-600',
+}
+
+
 WAGTAILADMIN_BASE_URL = "http://example.com"
 WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'txt', 'xlsx', 'zip']
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "/espace/"
-LOGOUT_REDIRECT_URL = "/"
+LOGIN_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/espace/'
+
+# Pour le logo + favicon si tu les remplaces dans /static/
+WAGTAIL_SITE_NAME = "Wulin Wushu Admin"

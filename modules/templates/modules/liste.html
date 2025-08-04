@@ -1,35 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="max-w-7xl mx-auto py-10 px-4">
-  <h1 class="text-3xl font-bold mb-8 text-center">Tableau de bord des modules</h1>
+  <h1 class="text-3xl font-bold mb-8 text-center text-dore">Tableau de bord des modules</h1>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
     <!-- Séances -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition">
+    <div class="bg-rouge-charte rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition">
       <div class="text-5xl mb-3">🗂️</div>
-      <h2 class="text-xl font-semibold mb-2">Séances</h2>
-      <div class="text-3xl font-bold text-blue-700 mb-2">{{ fiches.count }}</div>
-      <a href="{% url 'liste_seances' %}" class="btn bg-blue-600 text-white rounded-lg px-4 py-2 mt-2 hover:bg-blue-700">Voir les séances</a>
+      <h2 class="text-xl font-semibold mb-2 text-dore">Séances</h2>
+      <div class="text-3xl font-bold text-white mb-2">{{ fiches.count }}</div>
+      <a href="{% url 'liste_seances' %}" class="bg-rouge-charte text-dore border-2 border-dore rounded-lg px-4 py-2 mt-2 hover:bg-dore hover:text-rouge-charte hover:border-rouge-cramoisi font-semibold transition">
+        Voir les séances
+      </a>
     </div>
     <!-- Séquences -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition">
+    <div class="bg-rouge-cramoisi rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition">
       <div class="text-5xl mb-3">📑</div>
-      <h2 class="text-xl font-semibold mb-2">Séquences</h2>
-      <div class="text-3xl font-bold text-purple-700 mb-2">{{ sequences.count }}</div>
-      <a href="{% url 'liste_sequences' %}" class="btn bg-purple-600 text-white rounded-lg px-4 py-2 mt-2 hover:bg-purple-700">Voir les séquences</a>
+      <h2 class="text-xl font-semibold mb-2 text-dore">Séquences</h2>
+      <div class="text-3xl font-bold text-white mb-2">{{ sequences.count }}</div>
+      <a href="{% url 'liste_sequences' %}" class="bg-rouge-cramoisi text-dore border-2 border-dore rounded-lg px-4 py-2 mt-2 hover:bg-dore hover:text-rouge-cramoisi hover:border-rouge-charte font-semibold transition">
+        Voir les séquences
+      </a>
     </div>
     <!-- Ateliers -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition">
+    <div class="bg-rouge-fraise rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition">
       <div class="text-5xl mb-3">🛠️</div>
-      <h2 class="text-xl font-semibold mb-2">Ateliers</h2>
-      <div class="text-3xl font-bold text-green-700 mb-2">{{ ateliers.count }}</div>
-      <a href="{% url 'liste_ateliers' %}" class="btn bg-green-600 text-white rounded-lg px-4 py-2 mt-2 hover:bg-green-700">Voir les ateliers</a>
+      <h2 class="text-xl font-semibold mb-2 text-dore">Ateliers</h2>
+      <div class="text-3xl font-bold text-white mb-2">{{ ateliers.count }}</div>
+      <a href="{% url 'liste_ateliers' %}" class="bg-rouge-fraise text-dore border-2 border-dore rounded-lg px-4 py-2 mt-2 hover:bg-dore hover:text-rouge-fraise hover:border-rouge-fraise font-semibold transition">
+        Voir les ateliers
+      </a>
     </div>
     <!-- Techniques -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition">
+    <div class="bg-rouge-nacarat rounded-2xl shadow-lg p-6 flex flex-col items-center hover:scale-105 transition">
       <div class="text-5xl mb-3">🥋</div>
-      <h2 class="text-xl font-semibold mb-2">Techniques</h2>
-      <div class="text-3xl font-bold text-pink-700 mb-2">{{ techniques.count }}</div>
-      <a href="{% url 'liste_techniques' %}" class="btn bg-pink-600 text-white rounded-lg px-4 py-2 mt-2 hover:bg-pink-700">Voir les techniques</a>
+      <h2 class="text-xl font-semibold mb-2 text-dore">Techniques</h2>
+      <div class="text-3xl font-bold text-white mb-2">{{ techniques.count }}</div>
+      <a href="{% url 'liste_techniques' %}" class="bg-rouge-nacarat text-dore border-2 border-dore rounded-lg px-4 py-2 mt-2 hover:bg-dore hover:text-rouge-nacarat hover:border-rouge-nacarat font-semibold transition">
+        Voir les techniques
+      </a>
     </div>
   </div>
   <div class="text-center mt-10 text-gray-500">

@@ -146,3 +146,9 @@ deactivate
 git add .
 git commit -m "Base Django connectée à PostgreSQL, migrations OK"
 git push
+
+git add .gitignore .env.example
+git add -A    # ajoute aussi les éventuels autres modifs
+git commit -m "Mise à jour du .gitignore et ajout de .env.example"
+git push
+

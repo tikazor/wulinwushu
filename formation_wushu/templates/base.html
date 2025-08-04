@@ -3,6 +3,9 @@
 <!DOCTYPE html>
 <html lang="fr">
   <head>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
     <meta charset="utf-8" />
     <title>
       {% block title %}
@@ -13,7 +16,6 @@
         {% if current_site and current_site.site_name %} - {{ current_site.site_name }}{% endif %}
       {% endblock %}
     </title>
-
     {% if page.search_description %}
       <meta name="description" content="{{ page.search_description }}" />
     {% endif %}
@@ -21,99 +23,112 @@
     {% if request.in_preview_panel %}
       <base target="_blank">
     {% endif %}
-
-    <link rel="stylesheet" href="{% static 'css/formation_wushu.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     {% block extra_css %}{% endblock %}
   </head>
 
-  <body class="bg-gray-50 {% block body_class %}{% endblock %}">
+  <body class="bg-gray-50 {% block body_class %}{% endblock %} min-h-screen flex flex-col">
     {% wagtailuserbar %}
-
-    <!-- 🧭 Barre de navigation -->
-    <header class="bg-gray-900 shadow">
-      <nav class="container mx-auto flex flex-wrap items-center justify-between py-3 px-6">
-        <div class="flex items-center gap-5">
-          <a href="/" class="text-white text-xl font-bold hover:text-blue-400">🏠 Accueil</a>
-          <div class="relative group">
-            <a href="/modules/" class="text-white hover:text-blue-400 font-medium flex items-center">
-              📚 Nos cours
-              <svg class="w-4 h-4 ml-1 inline-block text-blue-300" fill="none" stroke="currentColor" stroke-width="2"
-                   viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </a>
-            <ul class="absolute left-0 top-full hidden group-hover:block bg-gray-800 shadow-xl rounded z-20 min-w-[180px]">
-              <li><a href="/modules/seances/"    class="block px-4 py-2 hover:bg-gray-700 text-white">Séances</a></li>
-              <li><a href="/modules/sequences/"  class="block px-4 py-2 hover:bg-gray-700 text-white">Séquences</a></li>
-              <li><a href="/modules/ateliers/"   class="block px-4 py-2 hover:bg-gray-700 text-white">Ateliers</a></li>
-              <li><a href="/modules/techniques/" class="block px-4 py-2 hover:bg-gray-700 text-white">Techniques</a></li>
-            </ul>
-          </div>
-        </div>
-        <ul class="flex gap-5 items-center">
-          {% if user.is_authenticated %}
-            <li>
-              <a href="/espace/" class="text-white hover:text-blue-400 flex items-center">
-                👤 Mon espace
-                <span class="ml-2 px-2 py-1 rounded bg-gray-700 text-xs text-gray-200 capitalize">
-                  {{ user.role|default_if_none:"" }}
-                </span>
-              </a>
-            </li>
-            {% if user.role == "animateur" %}
-              <li><a href="/suivi/global/" class="text-white hover:text-blue-400">📊 Suivi global</a></li>
-              <li><a href="/suivi/filtre/" class="text-white hover:text-blue-400">🔎 Suivi filtre</a></li>
-            {% endif %}
-            <li>
-              <a href="{% url 'logout' %}" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
-                🚪 Déconnexion
-              </a>
-            </li>
-          {% else %}
-            <li>
-              <a href="{% url 'login' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
-                🔐 Connexion
-              </a>
-            </li>
-            <li>
-              <a href="/signup/" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
-                📝 Créer un compte
-              </a>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
-    </header>
-
-{# --- BANDEAU ENSEIGNANTS / ADMIN : accès rapide création --- #}
-{% if user.is_authenticated %}
-  {% if user.role == "animateur" or user.is_superuser %}
-    <div class="bg-gray-100 border-b border-gray-300 shadow-inner px-4 py-2 flex flex-wrap gap-3 items-center justify-center sticky top-0 z-30">
-      <a href="/admin/pages/add/fiches/fichepage/3/" class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl shadow hover:bg-blue-700 transition" target="_blank">
-    <span class="text-xl">🗂️</span> Nouvelle séance
-</a>
-
-      <a href="{% url 'creer_sequence' %}" class="inline-flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-xl shadow hover:bg-purple-700 transition">
-        <span class="text-xl">📑</span> Nouvelle séquence
-      </a>
-      <a href="{% url 'creer_atelier' %}" class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition">
-        <span class="text-xl">🛠️</span> Nouvel atelier
-      </a>
-      <a href="{% url 'creer_technique' %}" class="inline-flex items-center gap-2 bg-pink-600 text-white px-4 py-2 rounded-xl shadow hover:bg-pink-700 transition">
-        <span class="text-xl">🥋</span> Nouvelle technique
-      </a>
-    </div>
-  {% endif %}
+      <!-- BLOC NOTIFICATIONS TOAST ICI -->
+{% if messages %}
+  <div class="fixed top-4 right-4 z-50 space-y-2">
+    {% for message in messages %}
+      <div class="toast-message px-4 py-2 rounded-lg shadow-md text-white font-semibold transition-all duration-500
+          {{ message.tags|default:'info' }}"
+          role="alert" aria-live="polite">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.toast-message').forEach(el => el.remove());
+    }, 5000);
+  </script>
 {% endif %}
 
+  <!-- FIN BLOC NOTIFICATIONS -->
+    <!-- 🧭 Barre de navigation -->
+    <header class="bg-gray-900 shadow-lg">
+  <nav class="max-w-7xl mx-auto flex flex-wrap items-center justify-between py-3 px-4 md:px-6">
+    <!-- Logo & Titre -->
+    <div class="flex items-center gap-4 sm:gap-6">
+      <a href="/" class="text-[#b22222] text-2xl font-extrabold tracking-tight flex items-center gap-2 hover:text-[#daa520] transition-colors">
+        <img src="{% static 'images/favicon.png' %}" alt="Logo Wulin Wushu" class="h-8 w-8 rounded" />
+        🥋 Wulin Wushu
+      </a>
+ 
 
-    <!-- 🔽 Contenu principal -->
+    </div>
+    <!-- Navigation principale -->
+    <ul class="flex flex-wrap gap-3 md:gap-4 items-center">
+      <li>
+        <a href="/" class="text-white hover:text-[#daa520] font-semibold transition focus:outline-none focus:ring-2 focus:ring-[#daa520]">Accueil</a>
+      </li>
+      <li>
+        <a href="/modules/" class="text-white hover:text-[#daa520] font-semibold transition focus:outline-none focus:ring-2 focus:ring-[#daa520]">Nos cours</a>
+      </li>
+      {% if user.is_authenticated %}
+        <li>
+          <a href="/espace/" class="text-white hover:text-[#daa520] flex items-center font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-[#daa520]">
+            👤 Mon espace
+            <span class="ml-2 px-2 py-1 rounded-xl text-xs shadow-inner
+              {% if user.role == 'admin' %}bg-[#daa520] text-black
+              {% elif user.role == 'animateur' %}bg-red-200 text-red-800
+              {% elif user.role == 'pratiquant' %}bg-gray-200 text-gray-700
+              {% else %}bg-gray-800 text-[#daa520]{% endif %}">
+              {{ user.role|default_if_none:"" }}
+            </span>
+          </a>
+        </li>
+        {% if user.role == "animateur" %}
+          <li><a href="/suivi/global/" class="text-white hover:text-[#daa520] font-medium transition focus:outline-none focus:ring-2 focus:ring-[#daa520]">📊 Suivi global</a></li>
+          <li><a href="/outils/" class="text-white hover:text-[#daa520] font-medium transition focus:outline-none focus:ring-2 focus:ring-[#daa520]">🛠️ Outils animateur</a></li>
+        {% endif %}
+        {% if user.is_superuser or user.role == "admin" %}
+          <li><a href="/admin/" class="text-white hover:text-[#daa520] font-medium transition focus:outline-none focus:ring-2 focus:ring-[#daa520]">⚙️ Administration</a></li>
+        {% endif %}
+        <li>
+          <form action="{% url 'logout' %}" method="post" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="text-white hover:text-[#b22222] font-semibold transition focus:outline-none focus:ring-2 focus:ring-[#daa520] focus:ring-offset-2">🔒 Déconnexion</button>
+          </form>
+        </li>
+      {% else %}
+        <li>
+          <a href="{% url 'login' %}" class="bg-[#b22222] hover:bg-[#daa520] text-white px-4 py-2 rounded-xl font-semibold transition focus:outline-none focus:ring-2 focus:ring-[#daa520] focus:ring-offset-2">🔐 Connexion</a>
+        </li>
+        <li>
+          <a href="/signup/" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold transition focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2">📝 Créer un compte</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+</header>
+
+
+    {% if user.is_authenticated %}
+      {% if user.role == "animateur" or user.is_superuser %}
+        <nav aria-label="Accès rapide animateur/admin" class="bg-gray-100 border-b border-gray-300 shadow-inner px-4 py-3 flex flex-wrap gap-4 items-center justify-center sticky top-0 z-30 rounded-b-xl md:gap-6 md:px-8">
+          <a href="/admin/pages/add/fiches/fichepage/3/" target="_blank" class="inline-flex items-center gap-2 bg-[#b22222] hover:bg-[#daa520] text-white font-semibold px-4 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-[#b22222] focus:ring-offset-2">
+            <span class="text-xl">🗂️</span> Nouvelle séance
+          </a>
+          <a href="{% url 'creer_sequence' %}" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
+            <span class="text-xl">📑</span> Nouvelle séquence
+          </a>
+          <a href="{% url 'creer_atelier' %}" class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2">
+            <span class="text-xl">🛠️</span> Nouvel atelier
+          </a>
+          <a href="{% url 'creer_technique' %}" class="inline-flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold px-4 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-pink-600 focus:ring-offset-2">
+            <span class="text-xl">🥋</span> Nouvelle technique
+          </a>
+        </nav>
+      {% endif %}
+    {% endif %}
+
     <main class="container mx-auto px-4 py-8">
       {% block content %}{% endblock %}
     </main>
 
-    <!-- 📦 Footer rapide -->
     <footer class="bg-gray-900 text-gray-400 text-sm py-4 text-center mt-8">
       <div>
         © {{ current_site.site_name|default:"Wulin Wushu" }} – {% now "Y" %}.
@@ -122,7 +137,6 @@
       </div>
     </footer>
 
-    <!-- 📦 JS global -->
     <script src="{% static 'js/formation_wushu.js' %}"></script>
     {% block extra_js %}{% endblock %}
   </body>

@@ -3,30 +3,32 @@
 
 {% block body_class %}template-homepage{% endblock %}
 
-{% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/welcome_page.css' %}">
-{% endblock extra_css %}
-
 {% block content %}
-
-  <section style="padding: 2em;">
-    <h1>🎓 Bienvenue sur la plateforme de formation <strong>Wushu</strong></h1>
-    <p>Explorez les modules, validez vos fiches, suivez votre progression à votre rythme.</p>
+<section class="flex flex-col items-center justify-center min-h-[60vh] py-12 bg-white">
+  <div class="container mx-auto px-4 text-center">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-rouge-charte mb-6">
+      🎓 Bienvenue sur la plateforme de formation <span class="text-dore">Wushu</span>
+    </h1>
+    <p class="mb-6 text-lg md:text-xl text-gray-700">
+      Explorez les modules, validez vos fiches, suivez votre progression à votre rythme.
+    </p>
 
     {% if user.is_authenticated %}
-      <p>
-        👉 <a href="/espace/">Accéder à mon espace personnel</a>
-      </p>
+      <a href="/espace/" class="inline-block bg-rouge-charte text-dore font-semibold px-6 py-3 rounded-xl shadow hover:bg-dore hover:text-rouge-charte border-2 border-dore transition mb-3 focus:outline-none focus:ring-2 focus:ring-rouge-charte">
+        👉 Accéder à mon espace personnel
+      </a>
       {% if user.role == "animateur" %}
-        <p>
-          📊 <a href="/suivi/">Voir le suivi des pratiquants</a>
-        </p>
+        <div class="mt-3">
+          <a href="/suivi/" class="inline-block bg-dore text-rouge-charte font-semibold px-6 py-3 rounded-xl shadow hover:bg-rouge-charte hover:text-dore border-2 border-rouge-charte transition focus:outline-none focus:ring-2 focus:ring-dore">
+            📊 Voir le suivi des pratiquants
+          </a>
+        </div>
       {% endif %}
     {% else %}
-      <p>
-        🔐 <a href="/login/">Connectez-vous pour commencer</a>
-      </p>
+      <a href="/login/" class="inline-block bg-dore text-rouge-charte font-semibold px-6 py-3 rounded-xl shadow hover:bg-rouge-charte hover:text-dore border-2 border-rouge-charte transition focus:outline-none focus:ring-2 focus:ring-dore">
+        🔐 Connectez-vous pour commencer
+      </a>
     {% endif %}
-  </section>
-
+  </div>
+</section>
 {% endblock content %}

@@ -1,25 +1,72 @@
 {% extends "base.html" %}
 {% block content %}
+{% load dict_extras %}
+
 <div class="flex flex-col items-center justify-center min-h-[70vh] bg-gray-50 py-8">
-  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
-    <h1 class="text-3xl font-bold mb-2">{{ objet.titre }}</h1>
-    <div class="mb-2">
-      <span class="bg-blue-100 text-blue-800 text-xs rounded px-2 py-1">{{ objet.get_type_sequence_display }}</span>
-      <span class="bg-green-100 text-green-800 text-xs rounded px-2 py-1">{{ objet.ateliers.count }} atelier{% if objet.ateliers.count > 1 %}s{% endif %}</span>
-    </div>
-    <div class="my-4">
-      <h2 class="font-semibold mb-1">Ateliers inclus :</h2>
-      <ul class="list-disc ml-6 text-gray-700">
-        {% for at in objet.ateliers.all %}
-          <li>{{ at }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="mb-4 text-gray-700">Durée totale : {{ objet.duree_totale }} min</div>
-    <div class="flex justify-between mt-6">
-      {% if prev_obj %}<a href="{% url detail_url prev_obj.pk %}" class="text-blue-600 hover:underline">&larr; Précédent</a>{% endif %}
-      {% if next_obj %}<a href="{% url detail_url next_obj.pk %}" class="text-blue-600 hover:underline">Suivant &rarr;</a>{% endif %}
-    </div>
+
+  <!-- Ateliers inclus (affichage carte homogène) -->
+<div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 mb-8">
+  <h2 class="text-lg font-bold mb-4 text-rouge-cramoisi">Ateliers inclus dans cette séquence</h2>
+  <div class="flex flex-wrap gap-4">
+    {% for at in objet.ateliers.all %}
+      <a href="{% url 'detail_atelier' at.pk %}" class="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2 hover:bg-blue-100 transition w-full sm:w-auto min-w-[220px]">
+        {% if at.image %}
+          <img src="{{ at.image.file.url }}"
+               alt="{{ at.nom|default:at }}"
+               class="w-10 h-10 object-cover rounded-xl border border-gray-200 shadow-sm flex-shrink-0" />
+        {% else %}
+          <span class="w-10 h-10 flex items-center justify-center bg-gray-300 text-gray-500 rounded-xl text-xl">–</span>
+        {% endif %}
+        <span class="text-base font-semibold truncate">{{ at.nom|default:at }}</span>
+        <span class="ml-auto text-xs text-gray-500 bg-gray-200 rounded px-2 py-0.5">{{ at.duree }} min</span>
+      </a>
+    {% empty %}
+      <span class="text-xs text-gray-400">Aucun atelier dans cette séquence.</span>
+    {% endfor %}
   </div>
+</div>
+
+
+
+  <!-- Liste unique des techniques -->
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
+  <h2 class="text-lg font-bold mb-4 text-rouge-cramoisi">Techniques utilisées dans cette séquence</h2>
+  <ul class="space-y-2">
+    {% for tech in unique_techs %}
+      <li>
+        <div class="flex items-center gap-4 rounded-xl p-2 transition group hover:bg-gray-100 focus:bg-blue-50">
+          <!-- Image -->
+          {% if tech.image %}
+            <img src="{{ tech.image.file.url }}"
+                 alt="{{ tech.nom }}"
+                 class="w-10 h-10 min-w-10 min-h-10 object-cover rounded-xl border border-gray-200 shadow-sm flex-shrink-0"
+                 loading="lazy" />
+          {% else %}
+            <span class="w-10 h-10 min-w-10 min-h-10 flex items-center justify-center bg-gray-200 text-gray-400 rounded-xl text-xl flex-shrink-0">—</span>
+          {% endif %}
+          <!-- Nom + lien technique -->
+          <a href="{% url 'detail_technique' tech.pk %}" class="text-base font-semibold group-hover:text-blue-600 truncate flex-1">
+            {{ tech.nom_pinyin|default:tech.nom }}
+          </a>
+          <!-- Badge nombre d'occurrences -->
+          <span class="ml-3 bg-indigo-100 text-indigo-700 rounded-full px-2 py-0.5 text-xs font-bold">
+            {{ tech_counts|get_item:tech }}×
+          </span>
+        </div>
+        <!-- Ateliers contenant cette technique -->
+        <div class="ml-14 text-xs text-gray-500 flex flex-wrap gap-2 mt-1">
+          <span>Dans :</span>
+          {% for at in objet.ateliers.all %}
+            {% if tech in at.techniques.all %}
+              <a href="{% url 'detail_atelier' at.pk %}" class="hover:underline hover:text-rouge-charte">{{ at.nom|default:at }}</a>{% if not forloop.last %},{% endif %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </li>
+    {% empty %}
+      <li class="text-gray-400">Aucune technique répertoriée dans cette séquence.</li>
+    {% endfor %}
+  </ul>
+</div>
 </div>
 {% endblock %}

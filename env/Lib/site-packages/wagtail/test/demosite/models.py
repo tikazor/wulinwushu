@@ -471,7 +471,7 @@ class EventPage(Page):
 
     def get_event_index(self):
         # Find closest ancestor which is an event index
-        return EventIndexPage.objects.ancester_of(self).last()
+        return EventIndexPage.objects.ancestor_of(self).last()
 
 
 class EventPageCarouselItem(Orderable, AbstractCarouselItem):
@@ -685,7 +685,6 @@ class FormField(AbstractFormField):
 
 
 class FormPage(AbstractForm):
-
     page_ptr = models.OneToOneField(
         Page, parent_link=True, related_name="+", on_delete=models.CASCADE
     )

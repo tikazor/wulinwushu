@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="flex flex-col items-center justify-center min-h-[70vh] bg-white py-16">
+  <div class="container mx-auto px-4 text-center">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-rouge-charte mb-6">
+      👋 Bienvenue sur la plateforme Wushu !
+    </h1>
+    <p class="mb-8 text-lg text-gray-700">Connectez-vous ou créez un compte pour commencer.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="{% url 'login' %}" class="bg-dore text-rouge-charte font-semibold px-6 py-3 rounded-xl shadow hover:bg-rouge-charte hover:text-dore border-2 border-rouge-charte transition focus:outline-none focus:ring-2 focus:ring-dore">
+        🔐 Connexion
+      </a>
+      <a href="{% url 'signup' %}" class="bg-rouge-charte text-dore font-semibold px-6 py-3 rounded-xl shadow hover:bg-dore hover:text-rouge-charte border-2 border-dore transition focus:outline-none focus:ring-2 focus:ring-rouge-charte">
+        📝 Créer un compte
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

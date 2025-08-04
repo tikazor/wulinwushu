@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
+from utilisateurs.permissions import can_access_tableau_suivi_global, is_animateur
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -15,9 +16,11 @@ def is_animateur(user):
     return user.is_authenticated and profile and profile.role == "animateur"
 
 @login_required(login_url="login")
+
 def tableau_suivi_global(request):
-    # Vérification de rôle côté vue
-    if not is_animateur(request.user):
+
+    # Contrôle centralisé de la permission
+    if not can_access_tableau_suivi_global(request.user):
         raise PermissionDenied()
     utilisateurs = User.objects.all().order_by("username")
     fiches = FichePage.objects.live().order_by("title")
@@ -38,6 +41,7 @@ def tableau_suivi_global(request):
 
 @login_required(login_url="login")
 @user_passes_test(is_animateur, login_url="login")
+
 def tableau_suivi_filtre(request):
     utilisateurs = User.objects.all().order_by("username")
     fiches = FichePage.objects.live().order_by("title")

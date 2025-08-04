@@ -1,29 +1,38 @@
-version: '3.9'
+
 
 services:
   db:
     image: postgres:16
-    restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
 
   web:
     build: .
     command: gunicorn formation_wushu.wsgi:application --bind 0.0.0.0:8000
+    # ... inchangé ...
     volumes:
-      - .:/app
+      - ./:/app
+      - ./templates:/app/templates
+      - ./formation_wushu/media:/app/media
+      - ./staticfiles:/app/staticfiles
+      - ./formation_wushu/static:/app/formation_wushu/static
+
+  nginx:
+    image: nginx:1.25
     ports:
-      - "8000:8000"
-    env_file:
-      - .env
+      - "80:80"
     depends_on:
-      - db
+      - web
+    volumes:
+      - ./templates:/app/templates
+      - ./formation_wushu/media:/app/media
+      - ./formation_wushu/static:/app/static
+      - ./staticfiles:/app/staticfiles
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
 
 volumes:
   postgres_data:
