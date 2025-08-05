@@ -8,9 +8,9 @@
 
 
     {% endif %}
-    <h1 class="text-3xl font-bold mb-2 text-rouge-nacarat">{{ objet.nom_pinyin }}</h1>
-    {% if objet.nom %}
-      <h2 class="text-lg text-gray-500 italic mb-1">{{ objet.nom }}</h2>
+    <h1 class="text-3xl font-bold mb-2 text-rouge-nacarat">{{ objet.nom }}</h1>
+    {% if objet.nom_pinyin %}
+      <h2 class="text-lg text-gray-500 italic mb-1">{{ objet.nom_pinyin }}</h2>
     {% endif %}
     {% if objet.traduction %}
       <h3 class="text-md text-gray-400 mb-2">({{ objet.traduction }})</h3>

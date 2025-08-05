@@ -7,10 +7,17 @@ from .blocks import SequenceBlock, SequenceChooserBlock
 class FichePageForm(forms.ModelForm):
     class Meta:
         model = FichePage
-        fields = "__all__"
+        # Liste **uniquement** les champs personnalisés que tu veux
+        fields = [
+            'title','date', 'niveau', 'animateurs', 'participants',
+            'is_public', 'sequences', 'categories'
+        ]
         widgets = {
-           'participants': forms.CheckboxSelectMultiple,
-            'sequences': forms.CheckboxSelectMultiple,
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            # Personnalise les autres widgets si besoin
+        }
+        labels = {
+            "title": "Titre de la fiche séance",
         }
 
 class SequenceForm(forms.ModelForm):
@@ -21,10 +28,10 @@ class SequenceForm(forms.ModelForm):
 class AtelierForm(forms.ModelForm):
     class Meta:
         model = Atelier
-        fields = ['techniques', 'duree', 'consigne']
+        fields = ['nom','techniques', 'duree', 'series', 'repetitions','materiels', 'consigne']
 
 class TechniqueForm(forms.ModelForm):
     class Meta:
         model = Technique
         fields = ['nom', 'nom_chinois', 'nom_pinyin', 'traduction', 'description',
-                  'style', 'zone', 'categorie', 'image', 'video', 'video_embed', 'lien']
+                  'style','references', 'zone', 'categorie', 'image', 'video', 'video_embed', 'lien']

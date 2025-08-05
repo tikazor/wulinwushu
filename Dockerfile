@@ -22,8 +22,8 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
 RUN pip install "gunicorn==20.0.4"
 
 # Copy requirements and install.
-COPY requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
+COPY requirements.txt /app/
+RUN pip install -r /app/requirements.txt
 
 WORKDIR /app
 

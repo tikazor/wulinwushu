@@ -2,3 +2,79 @@
 {% block form_title %}Créer une séance{% endblock %}
 {% block submit_label %}Enregistrer la séance{% endblock %}
 {% block retour_url %}{% url 'liste_seances' %}{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
+
+    {# Affiche tous les champs sauf sequences #}
+    {% for field in form %}
+        {% if field.name != "sequences" %}
+            <div>
+                {{ field.label_tag }}<br>
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="text-gray-500">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="text-red-500 text-xs">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    {# Bloc custom multi-checkbox filtrable pour séquences #}
+    <div id="sequences-multiselect" class="custom-multiselect-container w-full p-2 bg-gray-50 border rounded">
+        <label for="sequences-filter" class="font-semibold">Séquences associées</label>
+        <input type="search" placeholder="Filtrer..." class="mb-2 px-2 py-1 border border-gray-300 rounded w-full" id="sequences-filter">
+        <div class="grid grid-cols-2 gap-2" id="sequences-checkboxes">
+            {% for sequence in sequences %}
+                <label class="flex flex-col gap-1 border rounded p-2 bg-white shadow">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" name="sequences" value="{{ sequence.id }}"
+                            {% if sequence.id in selected_sequences %}checked{% endif %}>
+                        <span>
+                            <strong>{{ sequence.titre }}</strong>
+                            {% if sequence.get_type_sequence_display %} ({{ sequence.get_type_sequence_display }}){% endif %}
+                            {% if sequence.duree_totale %} | <em>{{ sequence.duree_totale }} min</em>{% endif %}
+                        </span>
+                    </div>
+                    {% for atelier_resume in sequence.resume %}
+                        <div class="pl-6 text-sm text-gray-600">{{ atelier_resume }}</div>
+                    {% endfor %}
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2">Enregistrer la séance</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function normalizeString(str) {
+        return str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : "";
+    }
+
+    const search = document.getElementById('sequences-filter');
+    const grid = document.getElementById('sequences-checkboxes');
+
+    if (search && grid) {
+        search.addEventListener('input', function() {
+            const val = normalizeString(search.value);
+            grid.querySelectorAll('label').forEach(function(label) {
+                // Recherche sur tout le texte du label, y compris résumé ateliers
+                const text = label.textContent;
+                if (normalizeString(text).includes(val)) {
+                    label.style.display = '';
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

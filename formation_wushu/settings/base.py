@@ -13,45 +13,63 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
-# Impression debug (peut être retirée si besoin)
-print("DB:", os.environ.get('POSTGRES_DB'))
-print("USER:", os.environ.get('POSTGRES_USER'))
-print("PWD:", os.environ.get('POSTGRES_PASSWORD'))
-print("HOST:", os.environ.get('POSTGRES_HOST'))
-print("PORT:", os.environ.get('POSTGRES_PORT'))
+import os
+print("=== DEBUG DJANGO SETTINGS ===")
+print("NAME:", os.environ.get("POSTGRES_DB"))
+print("USER:", os.environ.get("POSTGRES_USER"))
+print("PASSWORD:", os.environ.get("POSTGRES_PASSWORD"))
+print("HOST:", os.environ.get("POSTGRES_HOST"))
+print("PORT:", os.environ.get("POSTGRES_PORT"))
+print("=============================")
+
+
 
 INSTALLED_APPS = [
-    "home",
-    "search",
-    "modules.apps.ModulesConfig",
-    "utilisateurs.apps.UtilisateursConfig",
-    "fiches",
-    "widget_tweaks",
-    "wagtail_modeladmin",
-    "progression",
-    "import_export",
-    "wagtailstreamforms",
-    "wagtail.contrib.forms",
-    "wagtail.contrib.redirects",
-    "wagtail.embeds",
-    "wagtail.sites",
-    "wagtail.users",
-    "wagtail.snippets",
-    "wagtail.documents",
-    "wagtail.images",
-    "wagtail.search",
-    "wagtail.admin",
-    "wagtail",
-    "modelcluster",
-    "taggit",
-    "django_filters",
+    # Django natif (toujours en premier)
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # Librairies Django tierces (avant Wagtail pour certains widgets/forms)
+    "modelcluster",
+    "taggit",
+    "import_export",
+    "widget_tweaks",
+    "django_filters",
+
+    # Wagtail core (dans cet ordre, très important)
+    "wagtail",
+    "wagtail.admin",
+    "wagtail.sites",
+    "wagtail.users",
+    "wagtail.snippets",
+    "wagtail.documents",
+    "wagtail.images",
+    "wagtail.search",
+    "wagtail.embeds",
+    "wagtail.contrib.forms",
+    "wagtail.contrib.redirects",
+    "wagtail.contrib.modeladmin",
+
+    
+
+    # Tes apps projet (custom, peu importe l’ordre ici sauf dépendance directe)
+    "home",
+    "search",
+    "progression",
+    "fiches",
+    "modules.apps.ModulesConfig",
+    "utilisateurs.apps.UtilisateursConfig",
+
+    # Apps tierces spécifiques à Wagtail (ex : autocomplete et streamforms)
+    # "wagtailautocomplete",         # juste après wagtail.contrib.*
+    "wagtailstreamforms",          # idem
+    # "django_select2",
 ]
+
 
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -86,6 +104,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "formation_wushu.wsgi.application"
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'testwushu',         # <-- nouveau nom de base
+#         'USER': 'wulinuser',
+#         'PASSWORD': 'TestWushu2025',
+#         'HOST': 'db',
+#         'PORT': 5432,
+#     }
+# }
 
 DATABASES = {
     'default': {

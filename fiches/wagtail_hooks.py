@@ -1,5 +1,5 @@
-from wagtail_modeladmin.options import ModelAdmin, modeladmin_register
-from .models import Technique, Atelier, Sequence
+from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+from .models import Technique, Atelier, Sequence, Materiel
 from wagtail import hooks
 from utilisateurs.permissions import (    can_view_atelier,    can_view_sequence,    can_view_fiche,
 )
@@ -102,29 +102,17 @@ class TechniqueAdmin(ModelAdmin):
 modeladmin_register(TechniqueAdmin)
 
 
-# ----------------------------
-# Atelier
-# ----------------------------
-class AtelierAdmin(ModelAdmin):
-    model = Atelier
-    menu_label = "Ateliers"
-    menu_icon = "form"
-    list_display = ("__str__", "duree", "techniques_list")
-    search_fields = ("technique__nom", "consigne")
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        # on ne garde que les ateliers autorisés
-        allowed_ids = [obj.pk for obj in qs if can_view_atelier(request.user, obj)]
-        return qs.filter(pk__in=allowed_ids)
 
-    def techniques_list(self, obj):
-        return ", ".join(t.nom for t in obj.techniques.all())
-    techniques_list.short_description = "Techniques"
+class MaterielAdmin(ModelAdmin):
+    model = Materiel
+    menu_label = "Matériels"
+    menu_icon = "list-ul"
+    add_to_settings_menu = False
+    list_display = ('nom',)
+    search_fields = ('nom',)
 
-modeladmin_register(AtelierAdmin)
+modeladmin_register(MaterielAdmin)
 
 
 # ----------------------------
@@ -178,4 +166,116 @@ def restrict_fiches_to_animateurs_or_public(request, pages, parent_page):
 
     # Pour les autres types de pages, fallback au comportement par défaut : owner
     return pages.filter(owner=request.user)
+
+# ----------------------------
+# Atelier
+# ----------------------------
+class AtelierAdmin(ModelAdmin):
+    model = Atelier
+    menu_label = "Ateliers"
+    menu_icon = "form"
+    list_display = ("__str__", "duree", "techniques_list")
+    search_fields = ("technique__nom", "consigne")
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        # on ne garde que les ateliers autorisés
+        allowed_ids = [obj.pk for obj in qs if can_view_atelier(request.user, obj)]
+        return qs.filter(pk__in=allowed_ids)
+
+    def techniques_list(self, obj):
+        return ", ".join(t.nom for t in obj.techniques.all())
+    techniques_list.short_description = "Techniques"
+
+modeladmin_register(AtelierAdmin)
+
+@hooks.register('insert_editor_js')
+def custom_multiselect_js():
+    return """
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('select[multiple]').forEach(function(select) {
+            if (
+                select.style.display === 'none' ||
+                select.classList.contains('js-checkboxified') ||
+                select.parentNode.querySelectorAll('.custom-multiselect-container').length > 0 ||
+                select.closest('.object-multiselect-checkboxes')
+            ) {
+                return;
+            }
+            select.classList.add('js-checkboxified');
+
+            // Conteneur principal
+            let container = document.createElement('div');
+            container.className = 'custom-multiselect-container w-full p-2 bg-gray-50 border rounded';
+            // Champ recherche
+            let search = document.createElement('input');
+            search.type = 'search';
+            search.placeholder = 'Filtrer...';
+            search.className = 'mb-2 px-2 py-1 border border-gray-300 rounded w-full';
+            container.appendChild(search);
+
+            // Grille de cases à cocher
+            let grid = document.createElement('div');
+            grid.className = 'grid grid-cols-2 gap-2';
+            container.appendChild(grid);
+
+            // Ajoute toutes les options initiales
+            Array.from(select.options).forEach(function(opt) {
+                let label = document.createElement('label');
+                label.className = 'flex items-center gap-2';
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = opt.value;
+                checkbox.checked = opt.selected;
+                checkbox.dataset.optionText = opt.text; // Pour le filtre accent-insensitive
+                checkbox.addEventListener('change', function() {
+                    opt.selected = checkbox.checked;
+                });
+                label.appendChild(checkbox);
+                let span = document.createElement('span');
+                span.textContent = opt.text;
+                label.appendChild(span);
+                grid.appendChild(label);
+            });
+            select.style.display = 'none';
+            select.parentNode.insertBefore(container, select.nextSibling);
+
+            // Fonction de filtre accent-insensitive
+            function normalizeString(str) {
+                return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            }
+            search.addEventListener('input', function() {
+                let val = normalizeString(search.value);
+                grid.childNodes.forEach(function(label) {
+                    let text = label.querySelector('span').textContent;
+                    if (normalizeString(text).includes(val)) {
+                        label.style.display = '';
+                    } else {
+                        label.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
+    </script>
+    <style>
+    .custom-multiselect-container label {
+        cursor: pointer;
+        background: #f8f8f8;
+        border-radius: 0.5rem;
+        padding: 0.3rem 0.8rem;
+        transition: background 0.15s;
+    }
+    .custom-multiselect-container label:hover {
+        background: #b22222;
+        color: #fff;
+    }
+    .custom-multiselect-container input[type="search"] {
+        outline: none;
+    }
+    </style>
+    """
 

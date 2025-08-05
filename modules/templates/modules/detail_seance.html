@@ -13,6 +13,24 @@
       {% endfor %}
       <span class="bg-green-100 text-green-800 text-xs rounded px-2 py-1">Niveau : {{ objet.get_niveau_display }}</span>
     </div>
+            <!-- === Boutons Modifier/Supprimer, bien positionnés ici === -->
+<div class="flex gap-3 my-4">
+  {% if user.is_superuser or user in objet.animateurs.all %}
+    <a href="{% url 'modifier_fiche' objet.pk %}"
+      class="bg-rouge-nacarat hover:bg-yellow-500 text-gray-900 font-semibold px-5 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2">
+      Modifier
+    </a>
+    <a href="{% url 'supprimer_fiche' objet.pk %}"
+      class="bg-rouge-charte hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-rouge-charte focus:ring-offset-2">
+      Supprimer
+    </a>
+  {% endif %}
+</div>
+
+
+
+
+
     {% if objet.participants.all %}
   <div class="mb-4"><span class="font-semibold">Participants :</span>
     {% for user in objet.participants.all %}
@@ -36,9 +54,13 @@
             <span class="text-base font-semibold truncate">{{ seq.titre }}</span>
             <span class="ml-auto text-xs text-gray-500 bg-gray-200 rounded px-2 py-0.5">{{ seq.duree_totale }} min</span>
           </a>
+      
+  
         {% endfor %}
       </div>
     </div>
+ 
+    
     <div class="flex justify-between mt-8">
       {% if prev_obj %}
         <a href="{% url detail_url prev_obj.pk %}" class="text-rouge-charte hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-charte rounded transition">&larr; Précédent</a>

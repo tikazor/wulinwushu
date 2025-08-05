@@ -1,10 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-
+from django.contrib import messages  
 from django.shortcuts import render, get_object_or_404, redirect
 from fiches.models import FichePage
 from progression.models import ValidationFiche
-from utilisateurs.permissions import can_view_fiche
+from utilisateurs.permissions import can_view_fiche, can_edit_or_delete_fiche
+from django.core.exceptions import PermissionDenied
+from fiches.forms import FichePageForm
+
+
 
 
 @login_required
@@ -38,6 +42,8 @@ def espace_utilisateur(request):
         "utilisateur":         user,
     })
 
+# ─── Permission pour FichePage ───────────────────────────────────────────────
+
 @login_required
 def fiche_detail(request, slug):
     # récupère la FichePage publiée correspondant au slug
@@ -68,3 +74,31 @@ def valider_fiche(request, slug):
     # Si déjà validée, rien à faire, sinon créée.
     return redirect('fiche_detail', slug=fiche.slug)
 
+@login_required
+def supprimer_fiche(request, pk):
+    fiche = get_object_or_404(FichePage, pk=pk)
+    if not can_edit_or_delete_fiche(request.user, fiche):
+        raise PermissionDenied
+    if request.method == "POST":
+        fiche.delete()
+        messages.success(request, "Fiche supprimée avec succès.")
+        return redirect("liste_seances")
+    return render(request, "fiches/fiche_confirm_delete.html", {"fiche": fiche})
+
+@login_required
+def modifier_fiche(request, pk):
+    fiche = get_object_or_404(FichePage, pk=pk)
+    if not can_edit_or_delete_fiche(request.user, fiche):
+        messages.error(request, "Vous n'avez pas le droit de modifier cette fiche.")
+        return redirect('liste_seances')
+    if request.method == "POST":
+        form = FichePageForm(request.POST, instance=fiche)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Fiche modifiée avec succès.")
+            return redirect('detail_seance', pk=fiche.pk)
+    else:
+        form = FichePageForm(instance=fiche)
+    return render(request, "fiches/form_fiche.html", {"form": form, "fiche": fiche})
+
+# ─── FIN de FichePage ────────────────────────────────────────────

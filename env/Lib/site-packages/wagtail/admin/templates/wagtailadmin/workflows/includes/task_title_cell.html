@@ -3,5 +3,6 @@
 
 {% block title %}
     {{ block.super }}
-    {% if not instance.active %}{% status _("Disabled") %}{% endif %}
+    {% trans "Disabled" as status_label %}
+    {% if not instance.active %}{% status status_label %}{% endif %}
 {% endblock %}

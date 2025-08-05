@@ -2,3 +2,75 @@
 {% block form_title %}Créer une séquence{% endblock %}
 {% block submit_label %}Enregistrer la séquence{% endblock %}
 {% block retour_url %}{% url 'liste_sequences' %}{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
+
+    {# Affiche tous les champs sauf ateliers #}
+    {% for field in form %}
+        {% if field.name != "ateliers" %}
+            <div>
+                {{ field.label_tag }}<br>
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="text-gray-500">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="text-red-500 text-xs">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    {# Bloc custom multi-checkbox filtrable pour ateliers #}
+    <div id="ateliers-multiselect" class="custom-multiselect-container w-full p-2 bg-gray-50 border rounded">
+        <label for="ateliers-filter" class="font-semibold">Ateliers associés</label>
+        <input type="search" placeholder="Filtrer..." class="mb-2 px-2 py-1 border border-gray-300 rounded w-full" id="ateliers-filter">
+        <div class="grid grid-cols-2 gap-2" id="ateliers-checkboxes">
+            {% for atelier in ateliers %}
+    <label class="flex items-center gap-2">
+        <input type="checkbox" name="ateliers" value="{{ atelier.id }}"
+            {% if atelier.id in selected_ateliers %}checked{% endif %}>
+        <span>
+            <strong>{{ atelier.nom }}</strong>
+            {% if atelier.duree %} | <em>{{ atelier.duree }} min</em>{% endif %}
+            {% if atelier.techniques.all %} | {{ atelier.techniques.all|join:", " }}{% endif %}
+            {% if atelier.consigne %} | {{ atelier.consigne|truncatechars:40 }}{% endif %}
+        </span>
+    </label>
+{% endfor %}
+
+        </div>
+    </div>
+
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2">Enregistrer la séquence</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function normalizeString(str) {
+        return str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : "";
+    }
+
+    const search = document.getElementById('ateliers-filter');
+    const grid = document.getElementById('ateliers-checkboxes');
+
+    if (search && grid) {
+        search.addEventListener('input', function() {
+            const val = normalizeString(search.value);
+            grid.querySelectorAll('label').forEach(function(label) {
+                const text = label.querySelector('span').textContent;
+                if (normalizeString(text).includes(val)) {
+                    label.style.display = '';
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

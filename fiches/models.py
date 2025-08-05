@@ -1,4 +1,5 @@
 import datetime
+from django import forms
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -6,7 +7,9 @@ from django.contrib.auth.models import User
 from types import SimpleNamespace
 from wagtail.models import Page
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, InlinePanel
+# from wagtailautocomplete.edit_handlers import AutocompletePanel
 from wagtail.snippets.models import register_snippet
+# from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.images.models import Image 
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
@@ -43,6 +46,15 @@ class Technique(models.Model):
     description = models.TextField(blank=True, help_text="Brève description ou usage pédagogique")
 
     style = models.CharField(max_length=50, choices=STYLE_CHOICES, default="autre")
+   
+    references = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        blank=True,
+        related_name='referenced_by',
+        help_text="Techniques associées ou similaires"
+    )
+
     zone = models.CharField(max_length=50, choices=ZONE_CHOICES, default="corps entier")
     categorie = models.CharField(max_length=50, choices=CATEGORIE_CHOICES, default="autre")
 
@@ -70,6 +82,7 @@ class Technique(models.Model):
         FieldPanel("traduction"),
         FieldPanel("description"),
         FieldPanel("style"),
+        FieldPanel("references"), 
         FieldPanel("zone"),
         FieldPanel("categorie"),
         FieldPanel("image"),
@@ -82,12 +95,15 @@ class Technique(models.Model):
         return f"{self.nom} ({self.categorie})"
 
 
-# ─── Atelier (snippet) ────────────────────────────────────────────────
+# ─── ATELIER (snippet) ────────────────────────────────────────────────
 @register_snippet
 class Atelier(models.Model):
     nom = models.CharField(max_length=100, help_text="titre atelier ex: wubuquan, exercice souplesse")
     techniques = models.ManyToManyField("Technique", blank=True)
     duree = models.PositiveIntegerField(help_text="Durée en minutes")
+    series = models.PositiveIntegerField("Nombre de séries", blank=True, null=True, help_text="Ex : 3 séries")
+    repetitions = models.PositiveIntegerField("Nombre de répétitions", blank=True, null=True, help_text="Ex : 12 répétitions/série")
+    materiels = models.ManyToManyField("Materiel", blank=True, related_name="ateliers")
     consigne = models.TextField(blank=True, help_text="Consigne pédagogique")
     image = models.ForeignKey(
         "wagtailimages.Image",
@@ -96,18 +112,34 @@ class Atelier(models.Model):
         on_delete=models.SET_NULL,
         related_name="+"
     )
+    # CHAMPS AJOUTÉS
+    
 
     panels = [
         FieldPanel("nom"),
         FieldPanel("techniques"),
         FieldPanel("duree"),
         FieldPanel("consigne"),
-        FieldPanel("image"),  # Ajoute ici pour l’admin
+        FieldPanel("image"),
+        FieldPanel("series"),
+        FieldPanel("repetitions"),
     ]
 
-    def __str__(self) -> str:
-        techs = ", ".join(t.nom for t in self.techniques.all())
-        return f"{techs or 'Sans technique'} – {self.duree} min"
+    def __str__(self):
+        styles = ", ".join(sorted({t.style for t in self.techniques.all() if t.style}))
+        zones = ", ".join(sorted({t.zone for t in self.techniques.all() if t.zone}))
+        categories = ", ".join(sorted({t.categorie for t in self.techniques.all() if t.categorie}))
+
+        parts = [self.nom]
+        if styles:
+            parts.append(f"Styles: {styles}")
+        if zones:
+            parts.append(f"Zones: {zones}")
+        if categories:
+            parts.append(f"Catégories: {categories}")
+        return " | ".join(parts)
+
+
 
 
 # ─── Séquence (snippet) ───────────────────────────────────────────────
@@ -133,10 +165,28 @@ class Sequence(models.Model):
     ]
 
     def duree_totale(self) -> int:
-        return sum(a.duree for a in self.ateliers.all())
+        """Somme des durées des ateliers de la séquence."""
+        return sum(a.duree for a in self.ateliers.all() if a.duree)
 
-    def __str__(self) -> str:
-        return self.titre
+    def resume(self):
+        ateliers_resume = []
+        for atelier in self.ateliers.all():
+            techniques = ", ".join(sorted([t.nom for t in atelier.techniques.all()]))
+            consigne_debut = (atelier.consigne[:40] + "...") if atelier.consigne and len(atelier.consigne) > 40 else (atelier.consigne or "")
+            atelier_info = atelier.nom
+            if techniques:
+                atelier_info += f" | Techniques: {techniques}"
+            if atelier.duree:
+                atelier_info += f" | Durée: {atelier.duree} min"
+            if consigne_debut:
+                atelier_info += f" | Consigne: {consigne_debut}"
+            ateliers_resume.append(atelier_info)
+        return ateliers_resume
+
+    def __str__(self):
+        ateliers_info = "; ".join(self.resume())
+        return f"{self.titre} ({self.get_type_sequence_display()}) | Ateliers: {ateliers_info if ateliers_info else 'Aucun'}"
+
 
 
 # ─── FichePage ────────────────────────────────────────────────────────
@@ -205,6 +255,23 @@ class FichePage(Page):
     subpage_types = []
     template = "fiches/fiche_page.html"
 
+    def resume(self):
+        ateliers_resume = []
+        for atelier in self.ateliers.all():
+            techniques = ", ".join(sorted([t.nom for t in atelier.techniques.all()]))
+            consigne_debut = (atelier.consigne[:40] + "...") if atelier.consigne and len(atelier.consigne) > 40 else (atelier.consigne or "")
+            atelier_info = atelier.nom
+            if techniques:
+                atelier_info += f" | Techniques: {techniques}"
+            if atelier.duree:
+                atelier_info += f" | Durée: {atelier.duree} min"
+            if consigne_debut:
+                atelier_info += f" | Consigne: {consigne_debut}"
+            ateliers_resume.append(atelier_info)
+        return ateliers_resume
+
+
+
 
 # ─── Tag pour FichePage ───────────────────────────────────────────────
 class FichePageTag(TaggedItemBase):
@@ -213,3 +280,10 @@ class FichePageTag(TaggedItemBase):
         related_name="tagged_items",
         on_delete=models.CASCADE
     )
+
+@register_snippet
+class Materiel(models.Model):
+    nom = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.nom

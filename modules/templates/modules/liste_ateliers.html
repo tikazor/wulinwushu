@@ -2,11 +2,44 @@
 {% block content %}
 <div class="max-w-7xl mx-auto py-8">
   <h1 class="text-3xl font-bold mb-6 text-center">Ateliers</h1>
-  <form method="get" class="mb-6 flex gap-2 justify-center">
-    <input type="text" name="q" placeholder="Recherche (nom, consigne, technique...)" value="{{ q }}" class="input input-bordered w-full max-w-xs rounded-lg px-4 py-2 border border-gray-300">
-    <button type="submit" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
-      🔍
-    </button>
+
+    <form method="get" class="flex flex-wrap gap-4 mb-6">
+    <input
+      type="text"
+      name="q"
+      value="{{ q }}"
+      placeholder="Rechercher par consigne..."
+      class="rounded-lg border-gray-300 focus:border-rouge-charte focus:ring focus:ring-rouge-charte px-3 py-2 bg-gray-50"
+    />
+
+    <select name="style" class="rounded-lg border-gray-300 px-3 py-2 bg-gray-50">
+      <option value="">Style (tous)</option>
+      {% for s in styles %}
+        <option value="{{ s }}" {% if selected_style == s %}selected{% endif %}>{{ s|capfirst }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="zone" class="rounded-lg border-gray-300 px-3 py-2 bg-gray-50">
+      <option value="">Zone (toutes)</option>
+      {% for z in zones %}
+        <option value="{{ z }}" {% if selected_zone == z %}selected{% endif %}>{{ z|capfirst }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="categorie" class="rounded-lg border-gray-300 px-3 py-2 bg-gray-50">
+      <option value="">Catégorie (toutes)</option>
+      {% for c in categories %}
+        <option value="{{ c }}" {% if selected_categorie == c %}selected{% endif %}>{{ c|capfirst }}</option>
+      {% endfor %}
+    </select>
+
+    <button
+      type="submit"
+      class="bg-rouge-charte hover:bg-red-700 text-white font-semibold rounded-lg px-4 py-2 transition"
+    >Filtrer</button>
+  </form>
+
+
     {% if q %}
       <a href="{% url 'liste_ateliers' %}" class="text-red-500 ml-2">✖ Effacer</a>
     {% endif %}

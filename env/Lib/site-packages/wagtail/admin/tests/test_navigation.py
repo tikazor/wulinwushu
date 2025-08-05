@@ -1,8 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from wagtail.permission_policies.pages import PagePermissionPolicy
+from wagtail.admin.navigation import (
+    get_explorable_root_page,
+    get_pages_with_direct_explore_permission,
+)
 from wagtail.test.utils import WagtailTestUtils
+from wagtail.utils.deprecation import RemovedInWagtail60Warning
 
 
 class TestExplorablePages(WagtailTestUtils, TestCase):
@@ -45,19 +49,40 @@ class TestExplorablePages(WagtailTestUtils, TestCase):
         User = get_user_model()
         user = User.objects.get(email="superman@example.com")
 
-        self.assertEqual(PagePermissionPolicy().explorable_root_instance(user).id, 1)
+        with self.assertWarnsMessage(
+            RemovedInWagtail60Warning,
+            "get_explorable_root_page() is deprecated. "
+            "Use wagtail.permission_policies.pages.PagePermissionPolicy."
+            "explorable_root_instance() instead.",
+        ):
+            # Replace with PagePermissionPolicy().explorable_root_instance(user)
+            self.assertEqual(get_explorable_root_page(user).id, 1)
 
     def test_nav_root_for_nonadmin_is_closest_common_ancestor(self):
         User = get_user_model()
         user = User.objects.get(email="jane@example.com")
 
-        self.assertEqual(PagePermissionPolicy().explorable_root_instance(user).id, 2)
+        with self.assertWarnsMessage(
+            RemovedInWagtail60Warning,
+            "get_explorable_root_page() is deprecated. "
+            "Use wagtail.permission_policies.pages.PagePermissionPolicy."
+            "explorable_root_instance() instead.",
+        ):
+            # Replace with PagePermissionPolicy().explorable_root_instance(user)
+            self.assertEqual(get_explorable_root_page(user).id, 2)
 
     def test_nonadmin_sees_leaf_page_at_root_level(self):
         User = get_user_model()
         user = User.objects.get(email="bob@example.com")
 
-        self.assertEqual(PagePermissionPolicy().explorable_root_instance(user).id, 6)
+        with self.assertWarnsMessage(
+            RemovedInWagtail60Warning,
+            "get_explorable_root_page() is deprecated. "
+            "Use wagtail.permission_policies.pages.PagePermissionPolicy."
+            "explorable_root_instance() instead.",
+        ):
+            # Replace with PagePermissionPolicy().explorable_root_instance(user)
+            self.assertEqual(get_explorable_root_page(user).id, 6)
 
     def test_nonadmin_sees_pages_below_closest_common_ancestor(self):
         User = get_user_model()
@@ -65,12 +90,24 @@ class TestExplorablePages(WagtailTestUtils, TestCase):
         # Josh has permissions for /example-home/content/page-1 and /example-home/other-content,
         # of which the closest common ancestor is /example-home.
 
-        self.assertEqual(PagePermissionPolicy().explorable_root_instance(user).id, 4)
-
-        for page in PagePermissionPolicy().instances_with_direct_explore_permission(
-            user
+        with self.assertWarnsMessage(
+            RemovedInWagtail60Warning,
+            "get_explorable_root_page() is deprecated. "
+            "Use wagtail.permission_policies.pages.PagePermissionPolicy."
+            "explorable_root_instance() instead.",
         ):
-            self.assertIn(page.id, [6, 8])
+            # Replace with PagePermissionPolicy().explorable_root_instance(user)
+            self.assertEqual(get_explorable_root_page(user).id, 4)
+
+        with self.assertWarnsMessage(
+            RemovedInWagtail60Warning,
+            "get_pages_with_direct_explore_permission() is deprecated. "
+            "Use wagtail.permission_policies.pages.PagePermissionPolicy."
+            "instances_with_direct_explore_permission() instead.",
+        ):
+            # Replace with PagePermissionPolicy().instances_with_direct_explore_permission(user)
+            for page in get_pages_with_direct_explore_permission(user):
+                self.assertIn(page.id, [6, 8])
 
     def test_nonadmin_sees_only_explorable_pages(self):
         # Sam has permissions for /home and /example-home/content/page-1 , of which the closest
@@ -80,15 +117,34 @@ class TestExplorablePages(WagtailTestUtils, TestCase):
         User = get_user_model()
         user = User.objects.get(email="sam@example.com")
 
-        self.assertEqual(PagePermissionPolicy().explorable_root_instance(user).id, 1)
-
-        for page in PagePermissionPolicy().instances_with_direct_explore_permission(
-            user
+        with self.assertWarnsMessage(
+            RemovedInWagtail60Warning,
+            "get_explorable_root_page() is deprecated. "
+            "Use wagtail.permission_policies.pages.PagePermissionPolicy."
+            "explorable_root_instance() instead.",
         ):
-            self.assertIn(page.id, [2, 6])
+            # Replace with PagePermissionPolicy().explorable_root_instance(user)
+            self.assertEqual(get_explorable_root_page(user).id, 1)
+
+        with self.assertWarnsMessage(
+            RemovedInWagtail60Warning,
+            "get_pages_with_direct_explore_permission() is deprecated. "
+            "Use wagtail.permission_policies.pages.PagePermissionPolicy."
+            "instances_with_direct_explore_permission() instead.",
+        ):
+            # Replace with PagePermissionPolicy().instances_with_direct_explore_permission(user)
+            for page in get_pages_with_direct_explore_permission(user):
+                self.assertIn(page.id, [2, 6])
 
     def test_nonadmin_with_no_page_perms_cannot_explore(self):
         User = get_user_model()
         user = User.objects.get(email="mary@example.com")
 
-        self.assertIsNone(PagePermissionPolicy().explorable_root_instance(user))
+        with self.assertWarnsMessage(
+            RemovedInWagtail60Warning,
+            "get_explorable_root_page() is deprecated. "
+            "Use wagtail.permission_policies.pages.PagePermissionPolicy."
+            "explorable_root_instance() instead.",
+        ):
+            # Replace with PagePermissionPolicy().explorable_root_instance(user)
+            self.assertIsNone(get_explorable_root_page(user))

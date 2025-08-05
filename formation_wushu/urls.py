@@ -46,6 +46,8 @@ urlpatterns = [
 
     # Lecture des données dans modules
     path('modules/', include('modules.urls')),
+    # path('utilisateurs/', include('utilisateurs.urls')),
+
 
 
 

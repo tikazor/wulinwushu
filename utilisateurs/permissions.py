@@ -33,13 +33,26 @@ def can_view_fiche(user: User, fiche: FichePage) -> bool:
         return True
     return False
 
+# ─── Permission pour FichePage ───────────────────────────────────────────────
 
-def can_edit_fiche(user: User, fiche: FichePage) -> bool:
-    """
-    Une fiche est éditable si l'utilisateur est animateur
-    ET qu'il en est le propriétaire (owner Wagtail).
-    """
-    return user in fiche.animateurs.all() and fiche.owner == user
+# def can_edit_fiche(user, fiche: FichePage) -> bool:
+#     if user.is_superuser:
+#         return True
+#     # Animateur uniquement s'il fait partie du M2M
+#     return fiche.animateurs.filter(id=user.id).exists()
+
+# def can_delete_fiche(user, fiche: FichePage) -> bool:
+#     if user.is_superuser:
+#         return True
+#     return fiche.animateurs.filter(id=user.id).exists()
+
+def can_edit_or_delete_fiche(user, fiche):
+    if user.is_superuser:
+        return True
+    return user in fiche.animateurs.all()
+
+
+# ─── Fin FichePage ───────────────────────────────────────────────
 
 def can_view_sequence(user: User, sequence: Sequence) -> bool:
     """
@@ -60,4 +73,3 @@ def is_public_wubuquan(obj) -> bool:
     Retourne True si l'objet (Atelier ou Technique) est public via le tag 'wubuquan'.
     """
     return obj.tags.filter(name__iexact="wubuquan").exists()
-
