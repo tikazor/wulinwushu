@@ -2,12 +2,34 @@
 {% block content %}
 <div class="flex flex-col items-center justify-center min-h-[70vh] bg-gray-50 py-8">
   <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
-    {% if objet.image %}
-      <img src="{{ objet.image.file.url }}" alt="{{ objet.nom }}" class="rounded-xl w-full h-48 object-cover mb-6 shadow" />
-      
-
-
+   
+    {% if objet.upload_image %}
+      <a 
+        href="{{ objet.upload_image.url }}" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        <img
+          src="{{ objet.upload_image.url }}"
+          alt="{{ objet.nom }}"
+          class="
+            rounded-xl 
+            w-full        
+            max-w-md      
+            h-auto       
+            object-cover 
+            mb-6 
+            shadow
+            cursor-pointer  
+          "
+        />
+      </a>
+    {% else %}
+      <p class="text-gray-500 italic">Aucune image disponible.</p>
     {% endif %}
+
+
+
     <h1 class="text-3xl font-bold mb-2 text-rouge-nacarat">{{ objet.nom }}</h1>
     {% if objet.nom_pinyin %}
       <h2 class="text-lg text-gray-500 italic mb-1">{{ objet.nom_pinyin }}</h2>
@@ -21,14 +43,37 @@
       <span class="px-2 py-1 rounded bg-purple-100 text-purple-800 text-xs">{{ objet.get_style_display }}</span>
       <span class="px-2 py-1 rounded bg-orange-100 text-orange-800 text-xs">{{ objet.get_zone_display }}</span>
     </div>
-    <div class="flex justify-between mt-8">
+
+
+
+    <div class="flex justify-center space-x-4 my-6">
+                {% if can_edit_technique %}
+  <a href="{% url 'modifier_technique' objet.pk %}"
+   class="bg-btn-modifier hover:bg-modifier-hover
+          text-white border border-btn-modifier
+          rounded-lg px-4 py-2
+          focus:ring-2 focus:ring-btn-modifier focus:ring-offset-2 mr-2"
+   aria-label="Modifier la technique">Modifier</a>
+
+<a href="{% url 'supprimer_technique' objet.pk %}"
+   class="bg-btn-supprimer hover:bg-btn-supprimer-hover
+          text-white rounded-lg px-4 py-2
+          focus:ring-2 focus:ring-btn-supprimer focus:ring-offset-2"
+   aria-label="Supprimer la technique">Supprimer</a>      
+   </div>
+   {% endif %}
+<div class="flex justify-between mt-4">
       {% if prev_obj %}
         <a href="{% url detail_url prev_obj.pk %}" class="text-rouge-nacarat hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-nacarat rounded transition">&larr; Précédent</a>
       {% endif %}
       {% if next_obj %}
         <a href="{% url detail_url next_obj.pk %}" class="text-rouge-nacarat hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-nacarat rounded transition">Suivant &rarr;</a>
       {% endif %}
-    </div>
+      </div>
+
+
+
+
   </div>
 </div>
 {% endblock %}

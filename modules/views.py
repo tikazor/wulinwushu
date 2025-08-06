@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from fiches.models import FichePage, Sequence, Atelier, Technique
 from django.db.models import Q
-from utilisateurs.permissions import is_public_wubuquan
+from utilisateurs.permissions import can_edit_or_delete_sequence, is_public_wubuquan, can_edit_or_delete_atelier,can_edit_or_delete_technique
 from collections import Counter
 import unicodedata
 
@@ -138,54 +138,7 @@ def liste_sequences(request):
 
 
 
-def liste_ateliers(request):
-    q = request.GET.get('q', '').strip()
-    style = request.GET.get('style', '')
-    zone = request.GET.get('zone', '')
-    categorie = request.GET.get('categorie', '')
 
-    ateliers = Atelier.objects.all()
-
-    if not request.user.is_authenticated:
-        ateliers = ateliers.filter(tags__name__iexact="wubuquan")
-
-    if style:
-        ateliers = ateliers.filter(techniques__style=style)
-    if zone:
-        ateliers = ateliers.filter(techniques__zone=zone)
-    if categorie:
-        ateliers = ateliers.filter(techniques__categorie=categorie)
-
-    # Accent-insensitive filter EN DERNIER
-    model_fields = [
-        f.name for f in Atelier._meta.get_fields()
-        if f.get_internal_type() in ['CharField', 'TextField']
-    ]
-    if q:
-        q_norm = normalize(q)
-        ateliers = [
-            a for a in ateliers
-            if any(
-                q_norm in normalize(getattr(a, field) or '')
-                for field in model_fields
-            )
-        ]
-
-    # Ne PAS faire .distinct() après !
-    styles = Technique.objects.values_list('style', flat=True).distinct().order_by('style')
-    zones = Technique.objects.values_list('zone', flat=True).distinct().order_by('zone')
-    categories = Technique.objects.values_list('categorie', flat=True).distinct().order_by('categorie')
-
-    return render(request, "modules/liste_ateliers.html", {
-        "ateliers": ateliers,  # <--- PAS de .distinct() ici
-        "q": q,
-        "selected_style": style,
-        "selected_zone": zone,
-        "selected_categorie": categorie,
-        "styles": styles,
-        "zones": zones,
-        "categories": categories,
-    })
 
 
 def liste_seances(request):
@@ -266,7 +219,7 @@ def liste_seances(request):
         "categories": categories,
     })
 
-
+# ─── Modules ATELIER  ────────────────────────────────────────────────
 def detail_atelier(request, pk):
     current = get_object_or_404(Atelier, pk=pk)
 
@@ -277,12 +230,66 @@ def detail_atelier(request, pk):
     idx = ateliers.index(current)
     prev_obj = ateliers[idx-1] if idx > 0 else None
     next_obj = ateliers[idx+1] if idx < len(ateliers)-1 else None
+    can_edit = can_edit_or_delete_atelier(request.user, object)
+
     return render(request, "modules/detail_atelier.html", {
         "objet": current,
         "prev_obj": prev_obj,
         "next_obj": next_obj,
         "detail_url": "detail_atelier",
+        "can_edit_atelier": can_edit,
     })
+
+def liste_ateliers(request):
+    q = request.GET.get('q', '').strip()
+    style = request.GET.get('style', '')
+    zone = request.GET.get('zone', '')
+    categorie = request.GET.get('categorie', '')
+
+    ateliers = Atelier.objects.all()
+
+    if not request.user.is_authenticated:
+        ateliers = ateliers.filter(tags__name__iexact="wubuquan")
+
+    if style:
+        ateliers = ateliers.filter(techniques__style=style)
+    if zone:
+        ateliers = ateliers.filter(techniques__zone=zone)
+    if categorie:
+        ateliers = ateliers.filter(techniques__categorie=categorie)
+
+    # Accent-insensitive filter EN DERNIER
+    model_fields = [
+        f.name for f in Atelier._meta.get_fields()
+        if f.get_internal_type() in ['CharField', 'TextField']
+    ]
+    if q:
+        q_norm = normalize(q)
+        ateliers = [
+            a for a in ateliers
+            if any(
+                q_norm in normalize(getattr(a, field) or '')
+                for field in model_fields
+            )
+        ]
+
+    # Ne PAS faire .distinct() après !
+    styles = Technique.objects.values_list('style', flat=True).distinct().order_by('style')
+    zones = Technique.objects.values_list('zone', flat=True).distinct().order_by('zone')
+    categories = Technique.objects.values_list('categorie', flat=True).distinct().order_by('categorie')
+
+    return render(request, "modules/liste_ateliers.html", {
+        "ateliers": ateliers,  # <--- PAS de .distinct() ici
+        "q": q,
+        "selected_style": style,
+        "selected_zone": zone,
+        "selected_categorie": categorie,
+        "styles": styles,
+        "zones": zones,
+        "categories": categories,
+    })
+
+# ─── Fin ATELIER  ────────────────────────────────────────────────
 
 
 def detail_sequence(request, pk):
@@ -291,7 +298,8 @@ def detail_sequence(request, pk):
     idx = sequences.index(current)
     prev_obj = sequences[idx-1] if idx > 0 else None
     next_obj = sequences[idx+1] if idx < len(sequences)-1 else None
-
+    can_edit = can_edit_or_delete_sequence(request.user, current)
+    
     # Extraire toutes les techniques de tous les ateliers de la séquence
     all_techs = []
     for at in current.ateliers.all():
@@ -306,6 +314,7 @@ def detail_sequence(request, pk):
         "prev_obj": prev_obj,
         "next_obj": next_obj,
         "detail_url": "detail_sequence",
+        "can_edit_sequence": can_edit,
         "unique_techs": unique_techs,
         "tech_counts": tech_counts,
     })
@@ -320,11 +329,13 @@ def detail_technique(request, pk):
     idx = techniques.index(current)
     prev_obj = techniques[idx-1] if idx > 0 else None
     next_obj = techniques[idx+1] if idx < len(techniques)-1 else None
+    can_edit = can_edit_or_delete_technique(request.user, object)
     return render(request, "modules/detail_technique.html", {
         "objet": current,
         "prev_obj": prev_obj,
         "next_obj": next_obj,
         "detail_url": "detail_technique",
+        "can_edit_technique": can_edit,
     })
 
 

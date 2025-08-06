@@ -27,7 +27,10 @@
     <div id="ateliers-multiselect" class="custom-multiselect-container w-full p-2 bg-gray-50 border rounded">
         <label for="ateliers-filter" class="font-semibold">Ateliers associés</label>
         <input type="search" placeholder="Filtrer..." class="mb-2 px-2 py-1 border border-gray-300 rounded w-full" id="ateliers-filter">
-        <div class="grid grid-cols-2 gap-2" id="ateliers-checkboxes">
+        
+        <div id="ateliers-checkboxes"
+     style="max-height: 10rem; overflow-y: auto; padding-right: 0.25rem;"
+     class="grid grid-cols-2 gap-2">
             {% for atelier in ateliers %}
     <label class="flex items-center gap-2">
         <input type="checkbox" name="ateliers" value="{{ atelier.id }}"

@@ -24,6 +24,18 @@
       <span class="text-xs text-gray-400">Aucun atelier dans cette séquence.</span>
     {% endfor %}
   </div>
+<div class="flex justify-center space-x-4 my-6">
+  {% if can_edit_sequence  %}
+  <a href="{% url 'modifier_sequence' objet.pk %}" 
+  class="bg-btn-modifier hover:bg-btn-modifier-hover text-white rounded-lg px-4 py-2 mr-2 focus:ring-2 focus:ring-btn-modifier focus:ring-offset-2" aria-label="Modifier la séquence">
+    Modifier
+  </a>
+  <a href="{% url 'supprimer_sequence' objet.pk %}" 
+  class="bg-btn-supprimer hover:bg-btn-supprimer-hover text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-btn-supprimer focus:ring-offset-2 ml-2" aria-label="Supprimer la séquence">
+    Supprimer
+  </a>
+{% endif %}
+</div>
 </div>
 
 

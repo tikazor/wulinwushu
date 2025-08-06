@@ -17,7 +17,7 @@ services:
     volumes:
       - ./:/app
       - ./templates:/app/templates
-      - ./formation_wushu/media:/app/media
+      - ./media:/app/media
       - ./staticfiles:/app/staticfiles
       - ./formation_wushu/static:/app/formation_wushu/static
 
@@ -29,7 +29,7 @@ services:
       - web
     volumes:
       - ./templates:/app/templates
-      - ./formation_wushu/media:/app/media
+      - ./media:/app/media
       - ./formation_wushu/static:/app/static
       - ./staticfiles:/app/staticfiles
       - ./nginx.conf:/etc/nginx/nginx.conf:ro

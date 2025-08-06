@@ -54,12 +54,28 @@ def can_edit_or_delete_fiche(user, fiche):
 
 # ─── Fin FichePage ───────────────────────────────────────────────
 
+
+
+
+# ─── Permission pour Sequence ───────────────────────────────────────────────
+
 def can_view_sequence(user: User, sequence: Sequence) -> bool:
     """
     Une séquence est visible si au moins une fiche qui la contient
     est visible pour l'utilisateur.
     """
     return any(can_view_fiche(user, f) for f in sequence.fichepage_set.all())
+
+def can_edit_or_delete_sequence(user, sequence):
+    if user.is_superuser:
+        return True
+    return user in sequence.animateurs.all()
+
+
+# ─── Fin Sequence ───────────────────────────────────────────────
+
+
+# ─── Fin Atelier ───────────────────────────────────────────────
 
 def can_view_atelier(user: User, atelier: Atelier) -> bool:
     """
@@ -68,8 +84,23 @@ def can_view_atelier(user: User, atelier: Atelier) -> bool:
     """
     return any(can_view_sequence(user, seq) for seq in atelier.sequence_set.all())
 
+def can_edit_or_delete_atelier(user, atelier):
+    if user.is_superuser or user.is_staff:
+        return True
+    # Option : n'autoriser que les animateurs ayant accès à une fiche contenant cet atelier via une séquence, ou tous les animateurs selon ta logique
+    return hasattr(user, "profile") and user.profile.role == "animateur"
+
+# ─── Fin Sequence ───────────────────────────────────────────────
+
+
 def is_public_wubuquan(obj) -> bool:
     """
     Retourne True si l'objet (Atelier ou Technique) est public via le tag 'wubuquan'.
     """
     return obj.tags.filter(name__iexact="wubuquan").exists()
+
+def can_edit_or_delete_technique(user, technique):
+    if user.is_superuser or user.is_staff:
+        return True
+    # Tous les animateurs peuvent éditer/supprimer (ajuste si besoin)
+    return hasattr(user, "profile") and user.profile.role == "animateur"

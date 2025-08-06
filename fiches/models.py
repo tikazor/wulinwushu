@@ -5,15 +5,19 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from types import SimpleNamespace
+
+# Import Wagtail natif
 from wagtail.models import Page
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, InlinePanel
-# from wagtailautocomplete.edit_handlers import AutocompletePanel
+from wagtail.images.models import Image as WagtailImage
+from wagtail.images.models import Image
 from wagtail.snippets.models import register_snippet
-# from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.images.models import Image 
+
+# Tags & cluster pour vos snippets/taggit
 from taggit.models import TaggedItemBase
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
+
 
 
 # ─── Technique (snippet) ───────────────────────────────────────────────
@@ -58,6 +62,13 @@ class Technique(models.Model):
     zone = models.CharField(max_length=50, choices=ZONE_CHOICES, default="corps entier")
     categorie = models.CharField(max_length=50, choices=CATEGORIE_CHOICES, default="autre")
 
+
+    upload_image = models.ImageField(
+            "Téléverser une image",
+            upload_to="techniques/",
+            blank=True,
+            null=True,
+        )
     image = models.ForeignKey(
         "wagtailimages.Image",
         null=True,
@@ -65,6 +76,7 @@ class Technique(models.Model):
         on_delete=models.SET_NULL,
         related_name="+"
     )
+
     video = models.ForeignKey(
         "wagtaildocs.Document",
         null=True,
@@ -85,7 +97,7 @@ class Technique(models.Model):
         FieldPanel("references"), 
         FieldPanel("zone"),
         FieldPanel("categorie"),
-        FieldPanel("image"),
+        FieldPanel('image'),
         FieldPanel("video"),
         FieldPanel("video_embed"),
         FieldPanel("lien"),
@@ -105,6 +117,13 @@ class Atelier(models.Model):
     repetitions = models.PositiveIntegerField("Nombre de répétitions", blank=True, null=True, help_text="Ex : 12 répétitions/série")
     materiels = models.ManyToManyField("Materiel", blank=True, related_name="ateliers")
     consigne = models.TextField(blank=True, help_text="Consigne pédagogique")
+
+    upload_image = models.ImageField(
+        "Téléverser une image",
+        upload_to="ateliers/",
+        blank=True,
+        null=True,
+    )
     image = models.ForeignKey(
         "wagtailimages.Image",
         null=True,
@@ -120,7 +139,7 @@ class Atelier(models.Model):
         FieldPanel("techniques"),
         FieldPanel("duree"),
         FieldPanel("consigne"),
-        FieldPanel("image"),
+        FieldPanel('image'),
         FieldPanel("series"),
         FieldPanel("repetitions"),
     ]

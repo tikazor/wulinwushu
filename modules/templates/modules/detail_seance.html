@@ -14,18 +14,18 @@
       <span class="bg-green-100 text-green-800 text-xs rounded px-2 py-1">Niveau : {{ objet.get_niveau_display }}</span>
     </div>
             <!-- === Boutons Modifier/Supprimer, bien positionnés ici === -->
-<div class="flex gap-3 my-4">
-  {% if user.is_superuser or user in objet.animateurs.all %}
-    <a href="{% url 'modifier_fiche' objet.pk %}"
-      class="bg-rouge-nacarat hover:bg-yellow-500 text-gray-900 font-semibold px-5 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2">
-      Modifier
-    </a>
-    <a href="{% url 'supprimer_fiche' objet.pk %}"
-      class="bg-rouge-charte hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-rouge-charte focus:ring-offset-2">
-      Supprimer
-    </a>
-  {% endif %}
-</div>
+    <div class="flex gap-3 my-4">
+      {% if user.is_superuser or user in objet.animateurs.all %}
+        <a href="{% url 'modifier_fiche' objet.pk %}"
+          class="bg-rouge-nacarat hover:bg-yellow-500 text-gray-900 font-semibold px-5 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-blue-100 focus:ring-offset-2">
+          Modifier
+        </a>
+        <a href="{% url 'supprimer_fiche' objet.pk %}"
+          class="bg-rouge-charte hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition focus:outline-none focus:ring-2 focus:ring-rouge-charte focus:ring-offset-2">
+          Supprimer
+        </a>
+      {% endif %}
+    </div>
 
 
 

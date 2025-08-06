@@ -24,6 +24,15 @@ urlpatterns = [
 
     path('fiche/<int:pk>/modifier/', utilisateurs_views.modifier_fiche, name='modifier_fiche'),
     path('fiche/<int:pk>/supprimer/', utilisateurs_views.supprimer_fiche, name='supprimer_fiche'),
+    path('sequences/<int:pk>/modifier/', utilisateurs_views.modifier_sequence, name='modifier_sequence'),
+    path('sequences/<int:pk>/supprimer/', utilisateurs_views.supprimer_sequence, name='supprimer_sequence'),
+    path('ateliers/<int:pk>/modifier/', utilisateurs_views.modifier_atelier, name='modifier_atelier'),
+    path('ateliers/<int:pk>/supprimer/', utilisateurs_views.supprimer_atelier, name='supprimer_atelier'),
+    path('techniques/<int:pk>/modifier/', utilisateurs_views.modifier_technique, name='modifier_technique'),
+    path('techniques/<int:pk>/supprimer/', utilisateurs_views.supprimer_technique, name='supprimer_technique'),
+
+
+
 
     path('creer_fiche/', fiches_views.creer_fiche, name='creer_fiche'),
     path('creer_sequence/', fiches_views.creer_sequence, name='creer_sequence'),

@@ -7,7 +7,8 @@ from django.utils.text import slugify
 from wagtail.models import Page
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from fiches.models import FichePage, Sequence
+from fiches.models import FichePage, Sequence, Technique
+from wagtail.images import get_image_model
 
 def is_animateur(user):
     return user.is_authenticated and (getattr(user, "role", "") == "animateur" or user.is_superuser)
@@ -95,25 +96,34 @@ def creer_sequence(request):
 @login_required
 @user_passes_test(is_animateur)
 def creer_atelier(request):
-    from modules.models import Technique  # Adapte l'import si besoin
-
     if request.method == "POST":
-        form = AtelierForm(request.POST)
+        form = AtelierForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            atelier = form.save(commit=False)
+
+            # Traitement de l'upload_image
+            uploaded = form.cleaned_data.get('upload_image')
+            if uploaded:
+                WImage = get_image_model()
+                wagtail_img = WImage.objects.create(
+                    title = atelier.nom or "Atelier Image",
+                    file  = uploaded
+                )
+                atelier.image = wagtail_img
+
+            atelier.save()
+            form.save_m2m()
             return redirect('liste_ateliers')
     else:
         form = AtelierForm()
 
-    # Techniques à passer pour affichage custom
     techniques = Technique.objects.all().order_by('nom')
-    # Si tu veux conserver la sélection après erreur :
-    selected_techniques = request.POST.getlist('techniques') if request.method == "POST" else []
+    selected = request.POST.getlist('techniques') if request.method == "POST" else []
 
     return render(request, "fiches/form_atelier.html", {
         "form": form,
         "techniques": techniques,
-        "selected_techniques": [int(t) for t in selected_techniques],
+        "selected_techniques": [int(t) for t in selected],
     })
 
 
@@ -121,14 +131,43 @@ def creer_atelier(request):
 @login_required
 @user_passes_test(is_animateur)
 def creer_technique(request):
+    # Récupère la liste de toutes les références possibles
+    all_references = Technique.objects.all().order_by('nom')
+    
     if request.method == "POST":
         form = TechniqueForm(request.POST, request.FILES)
+        # Liste des IDs sélectionnés envoyés
+        selected_references = request.POST.getlist('references')
+        
         if form.is_valid():
-            form.save()
+            technique = form.save(commit=False)
+
+            # Gestion de l'image uploadée
+            uploaded = form.cleaned_data.get('upload_image')
+            if uploaded:
+                WImage = get_image_model()
+                wagtail_img = WImage.objects.create(
+                    title=technique.nom or "Technique Image",
+                    file=uploaded
+                )
+                technique.image = wagtail_img
+
+            technique.save()
+            form.save_m2m()
+            # Enregistre la relation M2M manuellement si nécessaire
+            technique.references.set(selected_references)
+
             return redirect('liste_techniques')
     else:
         form = TechniqueForm()
-    return render(request, "fiches/form_technique.html", {"form": form})
+        selected_references = []
+
+    return render(request, "fiches/form_technique.html", {
+        "form": form,
+        "all_references": all_references,
+        "selected_references": list(map(int, selected_references)),
+    })
+
 
 def get_unique_slug(parent, base_slug):
     slug = base_slug

@@ -1,4 +1,81 @@
 {% extends "fiches/base_form.html" %}
+{% load wagtailadmin_tags %}
+
 {% block form_title %}Ajouter une technique{% endblock %}
 {% block retour_url %}{% url 'liste_techniques' %}{% endblock %}
 {% block submit_label %}Enregistrer la technique{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
+
+    {# Champ upload_image #}
+    <div>
+      {{ form.upload_image.label_tag }}<br>
+      {{ form.upload_image }}
+      {% if form.upload_image.help_text %}
+        <small>{{ form.upload_image.help_text }}</small>
+      {% endif %}
+      {% for error in form.upload_image.errors %}
+        <div class="text-red-500 text-xs">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    {# Tous les champs sauf upload_image et references #}
+    {% for field in form %}
+      {% if field.name != "upload_image" and field.name != "references" %}
+        <div>
+          {{ field.label_tag }}<br>
+          {{ field }}
+          {% if field.help_text %}
+            <small class="text-gray-500">{{ field.help_text }}</small>
+          {% endif %}
+          {% for error in field.errors %}
+            <div class="text-red-500 text-xs">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {# --- Multiselect Références filtrable --- #}
+    <div id="references-multiselect"
+         class="w-full p-2 bg-gray-50 border rounded">
+      <label for="references-filter" class="font-semibold">Références</label>
+      <input
+        type="search"
+        id="references-filter"
+        placeholder="Filtrer..."
+        class="mb-2 px-2 py-1 border border-gray-300 rounded w-full focus:ring focus:ring-red-600"
+      >
+
+      <!-- <div id="references-checkboxes"
+     class="grid grid-cols-2 gap-2 h-40 overflow-y-scroll pr-1"> -->
+     <div id="references-checkboxes"
+     style="max-height: 10rem; overflow-y: auto; padding-right: 0.25rem;"
+     class="grid grid-cols-2 gap-2">
+
+        {% for ref in all_references %}
+          <label class="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="references"
+              value="{{ ref.id }}"
+              {% if ref.id in selected_references %}checked{% endif %}
+              class="form-checkbox rounded text-red-600 focus:ring focus:ring-red-600"
+            >
+            <span class="text-gray-800">
+              {{ ref.nom }}
+              {% if ref.nom_chinois %} ({{ ref.nom_chinois }}){% endif %}
+              {% if ref.nom_pinyin %} – {{ ref.nom_pinyin }}{% endif %}
+            </span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <button type="submit"
+            class="bg-red-600 hover:bg-red-700 text-white rounded px-4 py-2">
+      Enregistrer la technique
+    </button>
+</form>
+{% endblock %}

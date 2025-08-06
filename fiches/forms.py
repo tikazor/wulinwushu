@@ -3,6 +3,8 @@ from django import forms
 from wagtail.fields import StreamField
 from .models import FichePage, Sequence, Atelier, Technique
 from .blocks import SequenceBlock, SequenceChooserBlock
+from wagtail.images.models import Image
+from wagtail.images.widgets import AdminImageChooser
 
 class FichePageForm(forms.ModelForm):
     class Meta:
@@ -26,12 +28,22 @@ class SequenceForm(forms.ModelForm):
         fields = ['titre', 'type_sequence', 'ateliers']
 
 class AtelierForm(forms.ModelForm):
+    image = forms.ModelChoiceField(
+        queryset=Image.objects.all(),
+        required=False,
+        widget=AdminImageChooser
+    )
     class Meta:
         model = Atelier
-        fields = ['nom','techniques', 'duree', 'series', 'repetitions','materiels', 'consigne']
+        fields = ['nom','upload_image','techniques', 'duree', 'series', 'repetitions','materiels', 'consigne']
 
 class TechniqueForm(forms.ModelForm):
+    image = forms.ModelChoiceField(
+        queryset=Image.objects.all(),
+        required=False,
+        widget=AdminImageChooser
+    )
     class Meta:
         model = Technique
         fields = ['nom', 'nom_chinois', 'nom_pinyin', 'traduction', 'description',
-                  'style','references', 'zone', 'categorie', 'image', 'video', 'video_embed', 'lien']
+                  'style','references', 'zone', 'categorie', 'upload_image', 'video', 'video_embed', 'lien']

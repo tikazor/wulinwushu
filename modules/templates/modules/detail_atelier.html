@@ -4,13 +4,32 @@
 
 </p>
   <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
-    {% if objet.image %}
-  <img src="{{ objet.image.file.url }}" alt="{{ objet.nom }}" class="rounded-xl w-full h-48 object-cover mb-6 shadow" />
-  <p>DEBUG: {{ objet.image }} | {{ objet.image.file.url }}</p>
 
+       {% if objet.upload_image %}
+      <a 
+        href="{{ objet.upload_image.url }}" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        <img
+          src="{{ objet.upload_image.url }}"
+          alt="{{ objet.nom }}"
+          class="
+            rounded-xl 
+            w-full        
+            max-w-md      
+            h-auto       
+            object-cover 
+            mb-6 
+            shadow
+            cursor-pointer  
+          "
+        />
+      </a>
+    {% else %}
+      <p class="text-gray-500 italic">Aucune image disponible.</p>
+    {% endif %}
 
-
-{% endif %}
     <h1 class="text-2xl font-bold mb-2 text-rouge-fraise">{{ objet }}</h1>
     <div class="mb-4">
       <span class="bg-blue-100 text-blue-800 text-xs rounded px-2 py-1">Durée : {{ objet.duree }} min</span>
@@ -20,6 +39,8 @@
     {% endif %}
 
     <div class="mb-6">
+
+ 
   <h2 class="font-semibold mb-2">Techniques associées :</h2>
   <ul class="space-y-2">
     {% for tech in objet.techniques.all %}
@@ -43,9 +64,24 @@
       <li class="text-gray-400">Aucune technique liée.</li>
     {% endfor %}
   </ul>
-</div>
+  {# --- Boutons centrés sous la liste des techniques --- #}
+  {% if can_edit_atelier %}
+    <div class="flex justify-center space-x-4 my-6">
+      <a href="{% url 'modifier_atelier' objet.pk %}"
+         class="bg-btn-modifier hover:bg-btn-modifier-hover text-white rounded-lg px-4 py-2 mr-2 focus:ring-2 focus:ring-btn-modifier focus:ring-offset-2"
+         aria-label="Modifier l'atelier">
+        Modifier
+      </a>
 
+      <a href="{% url 'supprimer_atelier' objet.pk %}"
+         class="bg-btn-supprimer hover:bg-btn-supprimer-hover text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-btn-supprimer focus:ring-offset-2"
+         aria-label="Supprimer l'atelier">
+        Supprimer
+      </a>
+    </div>
+  {% endif %}
 
+ 
 
       {% if prev_obj %}
         <a href="{% url detail_url prev_obj.pk %}" class="text-rouge-fraise hover:underline focus:outline-none focus:ring-2 focus:ring-rouge-fraise rounded transition">&larr; Précédent</a>

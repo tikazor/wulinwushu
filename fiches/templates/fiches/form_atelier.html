@@ -1,3 +1,4 @@
+{# fiches/templates/fiches/form_atelier.html #}
 {% extends "fiches/base_form.html" %}
 {% block form_title %}Ajouter un atelier{% endblock %}
 {% block submit_label %}Enregistrer l'atelier{% endblock %}
@@ -5,72 +6,60 @@
 
 {% block content %}
 <form method="post" enctype="multipart/form-data" class="space-y-6">
-    {% csrf_token %}
+  {% csrf_token %}
 
-    {# Affiche tous les champs sauf techniques #}
-    {% for field in form %}
-        {% if field.name != "techniques" %}
-            <div>
-                {{ field.label_tag }}<br>
-                {{ field }}
-                {% if field.help_text %}
-                    <small class="text-gray-500">{{ field.help_text }}</small>
-                {% endif %}
-                {% for error in field.errors %}
-                    <div class="text-red-500 text-xs">{{ error }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
+  {# Champ upload_image #}
+  <div>
+    {{ form.upload_image.label_tag }}<br>
+    {{ form.upload_image }}
+    {% if form.upload_image.help_text %}
+      <small class="text-gray-500">{{ form.upload_image.help_text }}</small>
+    {% endif %}
+    {% for error in form.upload_image.errors %}
+      <div class="text-red-500 text-xs">{{ error }}</div>
     {% endfor %}
+  </div>
 
-    {# Bloc custom multi-checkbox filtrable pour techniques #}
-    <div id="techniques-multiselect" class="custom-multiselect-container w-full p-2 bg-gray-50 border rounded">
-        <label for="techniques-filter" class="font-semibold">Techniques associées</label>
-        <input type="search" placeholder="Filtrer..." class="mb-2 px-2 py-1 border border-gray-300 rounded w-full" id="techniques-filter">
-        <div class="grid grid-cols-2 gap-2" id="techniques-checkboxes">
-            {% for technique in techniques %}
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" name="techniques" value="{{ technique.id }}"
-                        {% if technique.id in selected_techniques %}checked{% endif %}>
-                    <span>
-                        {{ technique.nom }}
-                        {% if technique.style %} | Style: {{ technique.style }}{% endif %}
-                        {% if technique.zone %} | Zone: {{ technique.zone }}{% endif %}
-                        {% if technique.categorie %} | Catégorie: {{ technique.categorie }}{% endif %}
-                    </span>
-                </label>
-            {% endfor %}
-        </div>
+  {% for field in form %}
+    {% if field.name != "upload_image" and field.name != "techniques" and field.name != "image" %}
+      <div>
+        {{ field.label_tag }}<br>
+        {{ field }}
+        {% if field.help_text %}
+          <small class="text-gray-500">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="text-red-500 text-xs">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endfor %}
+
+  {# Multiselect techniques #}
+  <div id="techniques-multiselect" class="custom-multiselect-container w-full p-2 bg-gray-50 border rounded">
+    <label for="techniques-filter" class="font-semibold">Techniques associées</label>
+    <input type="search" placeholder="Filtrer..." class="mb-2 px-2 py-1 border border-gray-300 rounded w-full" id="techniques-filter">
+    
+      <div id="techniques-checkboxes"
+     style="max-height: 10rem; overflow-y: auto; padding-right: 0.25rem;"
+     class="grid grid-cols-2 gap-2">
+      {% for technique in techniques %}
+        <label class="flex items-center gap-2">
+          <input type="checkbox" name="techniques" value="{{ technique.id }}"
+              {% if technique.id in selected_techniques %}checked{% endif %}>
+          <span>
+            {{ technique.nom }}
+            {% if technique.style %} | Style: {{ technique.style }}{% endif %}
+            {% if technique.zone %} | Zone: {{ technique.zone }}{% endif %}
+            {% if technique.categorie %} | Catégorie: {{ technique.categorie }}{% endif %}
+          </span>
+        </label>
+      {% endfor %}
     </div>
+  </div>
 
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2">Enregistrer l'atelier</button>
+  <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2">
+    Enregistrer l'atelier
+  </button>
 </form>
-{% endblock %}
-
-{# Le JS peut être mis en bas du fichier ou chargé en static #}
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    function normalizeString(str) {
-        return str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : "";
-    }
-
-    const search = document.getElementById('techniques-filter');
-    const grid = document.getElementById('techniques-checkboxes');
-
-    if (search && grid) {
-        search.addEventListener('input', function() {
-            const val = normalizeString(search.value);
-            grid.querySelectorAll('label').forEach(function(label) {
-                const text = label.querySelector('span').textContent;
-                if (normalizeString(text).includes(val)) {
-                    label.style.display = '';
-                } else {
-                    label.style.display = 'none';
-                }
-            });
-        });
-    }
-});
-</script>
 {% endblock %}
